@@ -1,4 +1,3 @@
-from controllers.utils import Utils
 from views.views_crud_user import CrudUserView
 
 from models import models
@@ -40,15 +39,6 @@ class CrudUser:
             saltychain=saltychain,
         )
 
-        # user = models.Users(
-        #     username="testoune2",
-        #     password="zurzulute",
-        #     full_name="Test Oune",
-        #     email="",
-        #     phone_number="080-3654-4454",
-        #     status=3,
-        # )
-
         session.add(user)
         session.commit()
         CrudUserView().creation_successful(user)
@@ -56,19 +46,6 @@ class CrudUser:
         # print(f"saltychain: {saltychain}")
 
     def user_update(self, session):
-        # print("Client creation")
-        # client = models.Client(
-        #     full_name="testoune2",
-        #     email="coucou@kljhad.fr",
-        #     phone_number="0033554654654",
-        #     company_name="LaBananaaaaa",
-        #     salesman_in_charge=3,
-        # )
-
-        # session.add(client)
-        # session.commit()
-        # print(f"Client {client.full_name} was successfully created.")
-
         while True:
             user_id_input = CrudUserView().update_user_id_input()
             try:
@@ -132,6 +109,11 @@ class CrudUser:
 
         return field_to_update, value_to_update, None
 
-    def user_delete(self):
-        user_id_input = input("Please enter the ID of the user you wish to update: ")
-        user_update = session.query(models.Users).filter_by(id=user_id_input).first()
+    def user_delete(self, session):
+        user_id_input = CrudUserView().remove_user_id_input()
+        user = session.query(models.Users).filter_by(id=user_id_input).first()
+        confirm_deletion = CrudUserView().remove_user_confirm_deletion(user)
+        if confirm_deletion == "y":
+            session.delete(user)
+            session.commit()
+            CrudUserView().remove_user_sucess(user)

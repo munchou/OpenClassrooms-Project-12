@@ -1,5 +1,4 @@
 from controllers.config import config, ini_update_database
-from controllers.utils import Utils
 from controllers.crud_user import CrudUser
 
 from sqlalchemy_utils import create_database, database_exists
@@ -12,21 +11,37 @@ from models import models
 
 import sqlalchemy
 
+from sqlalchemy.orm import sessionmaker
+
 from sqlalchemy import create_engine, exc
 
 
 class DatabaseCreation:
-    session = Utils().session_init()
+    def session_init(self):
+        params = config()
+        try:
+            engine = create_engine(
+                f"postgresql://{params['user']}:{params['password']}@{params['host']}:{params['port']}/{params['database']}"
+            )
+            return engine
+        except Exception:
+            AuthenticationView().authentication_error()
+
+        Session = sessionmaker(bind=engine)
+        return Session()
+
+    # session = Utils().session_init()
 
     def admin_menu(self, username):
+        session = self.session_init()
         admin_menu = AuthenticationView().admin_menu(username)
 
         if admin_menu == "1":
-            CrudUser().user_create(self.session)
+            CrudUser().user_create(session)
         if admin_menu == "2":
-            CrudUser().user_update(self.session)
+            CrudUser().user_update(session)
         if admin_menu == "3":
-            CrudUser().user_delete(self.session)
+            CrudUser().user_delete(session)
         if admin_menu == "4":
             self.special_authentication()
         if admin_menu == "5":

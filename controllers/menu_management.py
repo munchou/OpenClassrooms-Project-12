@@ -25,3 +25,6 @@ class MenuManagement:
 
         if management_choice == "2":
             CrudUser().user_update(self.session)
+
+        if management_choice == "3":
+            CrudUser().user_delete(self.session)

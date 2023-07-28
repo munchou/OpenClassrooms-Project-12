@@ -120,7 +120,7 @@ class CrudUserView:
             elif status_input == "2":
                 return "sales"
             elif status_input == "3":
-                return "supportu"
+                return "support"
             else:
                 print("Input error, please try again.")
                 continue
@@ -147,9 +147,9 @@ class CrudUserView:
         print(f"User {user.username} was successfully created.")
 
     def update_user_id_input(self):
-        input("Please enter the ID of the user you wish to update: ")
+        user_id = input("Please enter the ID of the user you wish to update: ")
         # if user_id.isdigit():
-        #     return user_id
+        return user_id
 
     def confirm_update_choice(self, user_update):
         while True:
@@ -164,6 +164,29 @@ class CrudUserView:
     @staticmethod
     def update_successful():
         print("The user was updated successfully.")
+
+    def remove_user_id_input(self):
+        while True:
+            user_id = input("Please enter the ID of the user you wish to remove: ")
+            if user_id.isdigit():
+                return user_id
+            print("Bad input, try again")
+            continue
+
+    def remove_user_confirm_deletion(self, user):
+        while True:
+            confirm_deletion = input(
+                f"Do you confirm the deletion of {user.username} (ID: {user.id}) (y/n)? "
+            ).casefold()
+            if confirm_deletion == "y":
+                return "y"
+            elif confirm_deletion == "n":
+                return "n"
+            print("Input error, please try again.")
+            continue
+
+    def remove_user_sucess(self, user):
+        print(f"{user.username} (ID: {user.id}) was successfully deleted.")
 
 
 # user_confirm = False
