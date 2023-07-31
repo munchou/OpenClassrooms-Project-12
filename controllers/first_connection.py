@@ -4,8 +4,6 @@ from controllers.database_load_creation import DatabaseCreation
 
 from views.views_start import StartProgramView
 
-import os.path
-
 
 class FirstLaunch:
     def check_ini_exists(self):

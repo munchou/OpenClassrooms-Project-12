@@ -1,22 +1,29 @@
 import os.path
 from controllers.first_connection import FirstLaunch
 
+
+# from datetime import datetime
+
+# custom_date = "2023-7-30 15:40:58"
+# custom_date = str(datetime.strptime(custom_date, "%Y-%m-%d %H:%M:%S"))
+# current_date = datetime.now()
+# print(f"current_date: {current_date} /// custom_date: {custom_date}")
+
+# if str(current_date) < custom_date:
+#     print("You can't be from the future, can you?")
+# else:
+#     print("Date OK")
+
 path = "database.ini"
 check_file = os.path.isfile(path)
 if not check_file:
     FirstLaunch().check_ini_exists()
 
 
-from controllers.database_load_creation import DatabaseCreation
-from controllers.authentication_users import UserAuthentication
-from controllers.menu_management import MenuManagement
-
-
 def main():
-    # path = "database.ini"
-    # check_file = os.path.isfile(path)
-    # if not check_file:
-    #     FirstLaunch().check_ini_exists()
+    from controllers.database_load_creation import DatabaseCreation
+    from controllers.authentication_users import UserAuthentication
+    from controllers.menu_management import MenuManagement
 
     auth_menu, username = UserAuthentication().user_authentication()
     if auth_menu == "zupayuzaaa":

@@ -29,10 +29,15 @@ class CrudUserView:
     def username_input(self):
         while True:
             username_input = input("\tusername: ")
+            if len(username_input) > 50:
+                print(
+                    "\n\tERROR: The username cannot contain than 50 characters. Please try again.\n"
+                )
+                continue
             checked_input = self.check_input_characters(username_input)
             if checked_input != "input_passed":
                 print(
-                    "\nERROR in the input, please enter only valid characters, NO SPACE ALLOWED.\n"
+                    "\n\tERROR in the input, please enter only valid characters, NO SPACE ALLOWED.\n"
                 )
                 continue
 
@@ -41,10 +46,15 @@ class CrudUserView:
     def username_input_update(self):
         while True:
             username_input = input("\tusername: ")
+            if len(username_input) > 50:
+                print(
+                    "\n\tERROR: The username cannot contain than 50 characters. Please try again.\n"
+                )
+                continue
             checked_input = self.check_input_characters(username_input)
             if checked_input != "input_passed":
                 print(
-                    "\nERROR in the input, please enter only valid characters, NO SPACE ALLOWED.\n"
+                    "\n\tERROR in the input, please enter only valid characters, NO SPACE ALLOWED.\n"
                 )
                 continue
 
@@ -58,9 +68,9 @@ class CrudUserView:
             if checked_input != "input_passed":
                 continue
 
-            if len(pwd) < 8:
+            if len(pwd) < 8 or len(pwd) > 100:
                 print(
-                    f"\n\tERROR: Your password contains {len(pwd)} characters. Please try again"
+                    f"\n\tERROR: Your password contains {len(pwd)} characters. Please try again.\n"
                 )
                 continue
 
@@ -90,23 +100,42 @@ class CrudUserView:
         return zupakey, salty_chain
 
     def fullname_input(self):
-        return input("\tFull name: ")
+        while True:
+            fullname_input = input("\tFull name: ")
+            if len(fullname_input) > 100:
+                print(
+                    "\n\tERROR: the user's full name cannot contain more than 100 characters. Please try again.\n"
+                )
+                continue
+            return fullname_input
 
     def email_input(self, username):
         while True:
             email_input = input("\temail (optional, press ENTER if no email): ")
+            if len(email_input) > 100:
+                print(
+                    "\n\tERROR: the enail cannot contain more than 100 characters. Please try again.\n"
+                )
+                continue
             if email_input == "":
                 return f"{username}_no_email"
             if self.check_input_characters(email_input) != "input_passed":
                 print(
-                    "\nERROR in the input, please enter only valid characters, NO SPACE ALLOWED.\n"
+                    "\n\tERROR in the input, please enter only valid characters, NO SPACE ALLOWED.\n"
                 )
                 continue
 
             return email_input
 
     def phonenumber_input(self):
-        return input("\tTelephone number: ")
+        while True:
+            phone_input = input("\tTelephone number: ")
+            if len(phone_input) > 20:
+                print(
+                    "\n\tERROR: the phone number cannot contain more than 20 characters. Please try again.\n"
+                )
+                continue
+            return phone_input
 
     def status_input(self):
         while True:
@@ -122,7 +151,7 @@ class CrudUserView:
             elif status_input == "3":
                 return "support"
             else:
-                print("Input error, please try again.")
+                print("\n\tInput error, please try again.\n")
                 continue
 
     def user_confirmation(self, username, fullname, email, phone, status):
@@ -187,46 +216,3 @@ class CrudUserView:
 
     def remove_user_sucess(self, user):
         print(f"{user.username} (ID: {user.id}) was successfully deleted.")
-
-
-# user_confirm = False
-# while not user_confirm:
-#     username_input = input("Username: ")
-#     password_input = getpass("Password: ")
-#     full_name_input = input("Full name: ")
-#     email_input = input("email (optional): ")
-#     phone_number_input = input("Phone number: ")
-#     status_input = input("Team (1, 2 or 3): ")
-
-#     print("\nPlease confirm the new user's details:")
-#     print(f"Username: {username_input}")
-#     print(f"Password: {password_input}")
-#     print(f"Full name: {full_name_input}")
-#     print(f"email: {email_input}")
-#     print(f"Phone number: {phone_number_input}")
-#     print(f"Team: {status_input}")
-
-#     while True:
-#         confirm_input = input("\nConfirm? (y/n)").casefold()
-#         if confirm_input == "y":
-#             user_confirm = True
-#             break
-#         elif confirm_input != "n":
-#             continue
-#         break
-#     continue
-
-
-# # Let's try adding a user
-# print("User creation")
-# user = Users(
-#     username=username_input,
-#     password=password_input,
-#     full_name=full_name_input,
-#     email=email_input,
-#     phone_number=phone_number_input,
-#     status=status_input,
-# )
-# session.add(user)
-# session.commit()
-# print(f"User {user.username} was successfully created.")
