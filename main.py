@@ -24,14 +24,17 @@ def main():
     from controllers.database_load_creation import DatabaseCreation
     from controllers.authentication_users import UserAuthentication
     from controllers.menu_management import MenuManagement
+    from controllers.menu_admin import MenuAdmin
 
     auth_menu, username = UserAuthentication().user_authentication()
     if auth_menu == "zupayuzaaa":
         DatabaseCreation().admin_menu(username)
     if auth_menu == 1:
-        MenuManagement().menu_management(username)
+        MenuAdmin().menu_admin(username)
+        # MenuManagement().menu_management(username)
     if auth_menu == 2:
         print("Sales Team MENU")
+        MenuAdmin().menu_admin(username)
     if auth_menu == 3:
         print("Support Team MENU")
 

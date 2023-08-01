@@ -1,19 +1,10 @@
-from controllers.config import config, ini_update_database
+from controllers.config import config
 from controllers.utils import Utils
 
-from sqlalchemy_utils import create_database, database_exists
-
-from views.views_start import StartProgramView
-from views.views_create_load_db import LoadCreateDBView
 from views.views_authentication import AuthenticationView
 
 from models import models
-import random, sqlalchemy, hashlib, string, secrets
-from getpass import getpass
-
-from sqlalchemy import create_engine, exc, select
-
-from sqlalchemy.orm import sessionmaker
+import random, hashlib, secrets
 
 
 class UserAuthentication:
@@ -60,14 +51,10 @@ class UserAuthentication:
         all_users_list = session.query(models.Users.username).all()
         existing_usernames = []
         for t in all_users_list:
-            # print(f"user in DB: '{t[0]}'")
             existing_usernames.append(t[0])
-        print(existing_usernames)
 
         if username not in existing_usernames:
             return 0
-
-        # print(f"Current user '{username}' is in the DB.")
 
     def retrieve_salties(self, session, username):
         user_saltychain = (

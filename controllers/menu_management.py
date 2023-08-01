@@ -2,6 +2,7 @@ from controllers.utils import Utils
 from controllers.authentication_users import UserAuthentication
 from controllers.crud_user import CrudUser
 from controllers.crud_client import CrudClient
+from controllers.crud_contract import CrudContract
 
 from views.views_menu_management import MenuManagementView
 
@@ -37,10 +38,12 @@ class MenuManagement:
             CrudClient().client_update(self.session)
         #     CrudContract().contract_update(self.session)
 
-        # if management_choice == "6":
+        if management_choice == "6":
+            CrudContract().contract_create(self.session)
         #     CrdSupport().display_events_without_support(self.session)
 
-        # if management_choice == "7":
+        if management_choice == "7":
+            CrudClient().client_update(self.session)
         #     CrudSupport().assign_support_to_event(self.session)
 
         if management_choice == "8":

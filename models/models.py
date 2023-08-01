@@ -19,36 +19,6 @@ from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
-"""class Collaborator(Base):
-
-    class RoleEnum(enum.Enum):
-        administrator = 1
-        seller = 2
-        support = 3
-
-        def __json__(self):
-            return self.value
-
-    __tablename__ = 'collaborators'
-
-    id = Column(Integer, primary_key=True)
-    firstname = Column(String(length=50))
-    lastname = Column(String(length=50))
-    email = Column(String(length=50), unique=True)
-    role = Column(Enum(RoleEnum), nullable=False)
-    password = Column(String(length=60)) # The hashed password will always be 60 characters
-    token = Column(String)
-    token_expiration = Column(DateTime)
-    customers = relationship("Customer", back_populates="collaborator", cascade="all, delete")
-    events = relationship("Event", back_populates="collaborator", cascade="all, delete")
-
-    def __init__(self, firstname, lastname, email, role, password):
-        self.set_firstname(firstname)
-        self.set_lastname(lastname)
-        self.set_email(email)
-        self.set_role(role)
-        self.set_password(password)"""
-
 
 class Users(Base):
     class StatusEnum(enum.Enum):

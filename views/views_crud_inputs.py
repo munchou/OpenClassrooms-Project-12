@@ -2,7 +2,15 @@ from datetime import datetime
 from getpass import getpass
 import secrets, random, hashlib
 
-from views.views_crud_messages import CrudGeneralMessagesView
+from models import models
+
+from controllers.check_object_exists import CheckObjectExists
+
+from views.views_crud_messages import (
+    CrudContractMessagesView,
+    CrudEventMessagesView,
+    CrudGeneralMessagesView,
+)
 
 
 class CrudInputsView:
@@ -35,7 +43,7 @@ class CrudInputsView:
             return True
         return False
 
-    def username_input(self):
+    def username_input(self, session):
         while True:
             username_input = input("\tusername: ")
             if len(username_input) > 50:
@@ -52,6 +60,9 @@ class CrudInputsView:
                 )
                 continue
 
+            if CheckObjectExists().check_username_exists(session, username_input):
+                CrudGeneralMessagesView().already_exists()
+                continue
             return username_input
 
     def password_input(self):
@@ -105,7 +116,7 @@ class CrudInputsView:
                 continue
             return fullname_input
 
-    def email_input(self):
+    def email_input(self, session):
         while True:
             email_input = input("\temail (optional, press ENTER if no email): ")
             if len(email_input) > 100:
@@ -121,6 +132,9 @@ class CrudInputsView:
                 )
                 continue
 
+            if CheckObjectExists().check_email_user_exists(session, email_input):
+                CrudGeneralMessagesView().already_exists()
+                continue
             return email_input
 
     def phonenumber_input(self):
@@ -158,6 +172,10 @@ class CrudInputsView:
             if len(company_name_input) > 100:
                 print(
                     "\n\tERROR: the company's name cannot contain more than 100 characters. Please try again.\n"
+                )
+            if company_name_input.strip() == "":
+                print(
+                    "\n\tERROR: the company's name cannot be left empty. Please try again.\n"
                 )
                 continue
             return company_name_input
@@ -205,14 +223,6 @@ class CrudInputsView:
                 print("\n\tERROR in the input, please try again.\n")
                 continue
 
-    def client_confirmation(self, fullname, email, phone, company, lastcontacted):
-        print("\nPlease confirm the new client's details:")
-        print(f"\tFull name: {fullname}")
-        print(f"\temail: {email}")
-        print(f"\tPhone number: {phone}")
-        print(f"\tCompany: {company}")
-        print(f"\tLast contacted: {lastcontacted}")
-
     def confirm_creation(self):
         while True:
             confirm_input = input("\nConfirm? (y/n)\n").casefold()
@@ -229,14 +239,14 @@ class CrudInputsView:
                 return user_id
             print("\n\tERROR: Only digits are allowed.")
 
-    def what_to_update(self):
+    def what_to_update_user(self):
         while True:
             print("What would you like to update?")
             print("\t1: username")
-            print("\t2: full_name")
+            print("\t2: User's name")
             print("\t3: email")
-            print("\t4: phone_number")
-            print("\t5: status")
+            print("\t4: Phone number")
+            print("\t5: Status")
             print("\tpassword: password")
             field_to_update = input("Choice: ")
             if field_to_update not in ["1", "2", "3", "4", "5", "password"]:
@@ -244,7 +254,7 @@ class CrudInputsView:
                 continue
             return field_to_update
 
-    def confirm_update_choice(self, user_update):
+    def confirm_user_update_choice(self, user_update):
         while True:
             print(f"\nYou are about to update '{user_update.username}'.")
             confirm_input = input("Please confirm (y/n):\n").casefold()
@@ -278,3 +288,322 @@ class CrudInputsView:
         user_id = input("Please enter the ID of the client you wish to update: ")
         # if user_id.isdigit():
         return user_id
+
+    def confirm_client_update_choice(self, client_update):
+        while True:
+            print(f"\nYou are about to update the client '{client_update.full_name}'.")
+            confirm_input = input("Please confirm (y/n):\n").casefold()
+            if confirm_input == "y":
+                return "y"
+            elif confirm_input != "n":
+                continue
+            return False
+
+    def what_to_update_client(self):
+        while True:
+            print("What would you like to update?")
+            print("\t1: Client's name")
+            print("\t2: email")
+            print("\t3: Phone number")
+            print("\t4: Company's name")
+            print("\t5: Last contact date")
+            # print("\tsalesman: Salesman in charge")
+            field_to_update = input("Choice: ")
+            if field_to_update not in ["1", "2", "3", "4", "5"]:
+                CrudGeneralMessagesView().wrong_input()
+                continue
+            return field_to_update
+
+    def update_contract_id(self, session):
+        while True:
+            contract_id = input("\tContract's ID: ")
+            if contract_id.isdigit():
+                if not CheckObjectExists().check_contractID_exists(
+                    session, contract_id
+                ):
+                    CrudContractMessagesView().contractID_not_exist()
+                    continue
+                return contract_id
+            print("\n\tERROR: Only digits are allowed.")
+
+    def contract_clientid_input(self, session):
+        while True:
+            client_id = input("\tClient's ID: ")
+            if client_id.isdigit():
+                if not CheckObjectExists().check_clientID_exists(session, client_id):
+                    CrudContractMessagesView().clientID_not_exist()
+                    continue
+                return client_id
+            print("\n\tERROR: Only digits are allowed.")
+
+    def contract_salesmanid_input(self, session):
+        while True:
+            salesman_id = input("\tID of the Salesman in charge of that contract: ")
+            if salesman_id.isdigit():
+                if not CheckObjectExists().check_salesmanID_exists(
+                    session, salesman_id
+                ):
+                    CrudContractMessagesView().salesmanID_not_exist()
+                    continue
+                return salesman_id
+            print("\n\tERROR: Only digits are allowed.")
+
+    def contract_total_amount_input(self):
+        while True:
+            amount_input = input("\tContract's total price: ")
+            try:
+                float(amount_input)
+                return amount_input
+            except ValueError:
+                print("\n\tERROR: Please enter a number.")
+
+    def contract_due_amount_input(self):
+        while True:
+            amount_input = input("\tContract's due amount: ")
+            try:
+                float(amount_input)
+                return amount_input
+            except ValueError:
+                print("\n\tERROR: Please enter a number.")
+
+    def contract_signed(self):
+        while True:
+            signed_input = input("\tThe contract has been signed (y/n): ").casefold()
+            if signed_input == "y":
+                return True
+            if signed_input == "n":
+                return False
+            else:
+                CrudGeneralMessagesView().wrong_input()
+                continue
+
+    def confirm_contract_update_choice(self, session, contract_update):
+        contract_client = (
+            session.query(models.Client).filter_by(id=contract_update.client).first()
+        )
+        while True:
+            print(
+                f"\nYou are about to update [{contract_client.full_name}]'s contract."
+            )
+            confirm_input = input("Please confirm (y/n):\n").casefold()
+            if confirm_input == "y":
+                return "y"
+            elif confirm_input != "n":
+                continue
+            return False
+
+    def what_to_update_contract(self):
+        while True:
+            print("What would you like to update?")
+            print("\t1: Contract's total price")
+            print("\t2: Contract's due amount")
+            print("\t3: Contract's signature")
+            field_to_update = input("Choice: ")
+            if field_to_update not in ["1", "2", "3"]:
+                CrudGeneralMessagesView().wrong_input()
+                continue
+            return field_to_update
+
+    def event_client_name(self, session, contract_id):
+        contract = session.query(models.Contract).filter_by(id=contract_id).first()
+        client = session.query(models.Client).filter_by(id=contract.client).first()
+        return client.full_name
+
+    def event_client_contact_input(self):
+        while True:
+            contact_input = input(
+                "\tClient's contact info (name, phone number, etc.): "
+            )
+            if len(contact_input) > 100:
+                print(
+                    f"\n\tERROR: Your text contains {len(contact_input)} characters (max 100). Please try again.\n"
+                )
+                continue
+            return contact_input
+
+    def event_startdate(self):
+        while True:
+            print("\tStart date of the event (press ENTER to skip that step)")
+            year = input("\tYear: ")
+            if year.strip() == "":
+                return None
+            month = input("\tMonth: ")
+            day = input("\tDay: ")
+            time_hours = input("\tHours: ")
+            time_minutes = input("\tMinutes: ")
+            custom_date = f"{year}-{month}-{day} {time_hours}:{time_minutes}"
+
+            try:
+                custom_date = datetime.strptime(custom_date, "%Y-%m-%d %H:%M")
+            except ValueError:
+                print(f"Error in the date {custom_date}, please try again.")
+                continue
+
+            custom_date = str(custom_date)
+
+            if custom_date < str(datetime.now()):
+                print("The start date cannot be prior to the current date.")
+                continue
+
+            print("Is that date correct?")
+            check_time = input(f"\t{custom_date} (y/n): ").casefold()
+            if check_time == "y":
+                return custom_date
+            if check_time == "n":
+                continue
+            else:
+                print("\n\tERROR in the input, please try again.\n")
+                continue
+
+    def event_enddate(self, startdate):
+        while True:
+            print("\tEnd date of the event (press ENTER to skip that step)")
+            year = input("\tYear: ")
+            if year.strip() == "":
+                return None
+            month = input("\tMonth: ")
+            day = input("\tDay: ")
+            time_hours = input("\tHours: ")
+            time_minutes = input("\tMinutes: ")
+            custom_date = f"{year}-{month}-{day} {time_hours}:{time_minutes}"
+
+            try:
+                custom_date = datetime.strptime(custom_date, "%Y-%m-%d %H:%M")
+            except ValueError:
+                print(f"Error in the date {custom_date}, please try again.")
+                continue
+
+            custom_date = str(custom_date)
+
+            if custom_date < startdate:
+                print("The end date cannot be prior to the start date.")
+                continue
+
+            print("Is that date correct?")
+            check_time = input(f"\t{custom_date} (y/n): ").casefold()
+            if check_time == "y":
+                return custom_date
+            if check_time == "n":
+                continue
+            else:
+                print("\n\tERROR in the input, please try again.\n")
+                continue
+
+    def event_supportid_input(self, session):
+        while True:
+            support_id = input(
+                "\tID of the Support member in charge of that contract (0 if undecided): "
+            )
+            if support_id == "0":
+                return None
+            if support_id.isdigit():
+                if not CheckObjectExists().check_supportID_exists(session, support_id):
+                    CrudEventMessagesView().supportID_not_exist()
+                    continue
+                return support_id
+            print("\n\tERROR: Only digits are allowed.")
+
+    def event_location_input(self):
+        while True:
+            location_input = input("\tLocation: ")
+            if len(location_input) > 100:
+                print(
+                    f"\n\tERROR: The location contains {len(location_input)} characters (max 100). Please try again.\n"
+                )
+                continue
+            return location_input
+
+    def event_attendees_input(self):
+        while True:
+            attendees_input = input("\tHow many attendees? ")
+            if attendees_input.isdigit():
+                return attendees_input
+            else:
+                print("\n\tERROR: Only digits are allowed.")
+                continue
+
+    def event_notes_input(self):
+        return input("\tAdditional notes: ")
+
+    def update_event_id(self, session):
+        while True:
+            event_id = input("\tEvent's ID: ")
+            if event_id.isdigit():
+                if not CheckObjectExists().check_eventID_exists(session, event_id):
+                    CrudEventMessagesView().eventID_not_exist()
+                    continue
+                return event_id
+            print("\n\tERROR: Only digits are allowed.")
+
+    def confirm_event_update_choice(self, session, event_update):
+        event_contract = (
+            session.query(models.Contract)
+            .filter_by(id=event_update.contract_id)
+            .first()
+        )
+        contract_client = (
+            session.query(models.Client).filter_by(id=event_contract.client).first()
+        )
+        while True:
+            print(
+                f"\nYou are about to update the event for [{contract_client.full_name}]'s contract (ID: {event_contract.id})."
+            )
+            confirm_input = input("Please confirm (y/n):\n").casefold()
+            if confirm_input == "y":
+                return "y"
+            elif confirm_input != "n":
+                continue
+            return False
+
+    def what_to_update_event(self):
+        while True:
+            print("What would you like to update?")
+            print("\t1: Client's contact info")
+            print("\t2: Start date")
+            print("\t3: End date")
+            print("\t4: Assigned Support member")
+            print("\t5: Location")
+            print("\t6: Number of attendees")
+            print("\t7: Notes")
+            field_to_update = input("Choice: ")
+            if field_to_update not in ["1", "2", "3", "4", "5", "6", "7"]:
+                CrudGeneralMessagesView().wrong_input()
+                continue
+            return field_to_update
+
+    def event_enddate_update(self, event_id, session):
+        event = session.query(models.Event).filter_by(id=event_id).first()
+        startdate = event.start_date
+        while True:
+            print(f"\tEvent's start date: {startdate}.")
+            print("\tEnd date of the event (press ENTER to skip that step)")
+            year = input("\tYear: ")
+            if year.strip() == "":
+                return None
+            month = input("\tMonth: ")
+            day = input("\tDay: ")
+            time_hours = input("\tHours: ")
+            time_minutes = input("\tMinutes: ")
+            custom_date = f"{year}-{month}-{day} {time_hours}:{time_minutes}"
+
+            try:
+                custom_date = datetime.strptime(custom_date, "%Y-%m-%d %H:%M")
+            except ValueError:
+                print(f"Error in the date {custom_date}, please try again.")
+                continue
+
+            custom_date = str(custom_date)
+
+            if custom_date < startdate:
+                print("The end date cannot be prior to the start date.")
+                continue
+
+            print("Is that date correct?")
+            check_time = input(f"\t{custom_date} (y/n): ").casefold()
+            if check_time == "y":
+                return custom_date
+            if check_time == "n":
+                continue
+            else:
+                print("\n\tERROR in the input, please try again.\n")
+                continue

@@ -1,119 +1,98 @@
-from views.views_crud_messages import CrudUserView
+from views.views_crud_inputs import CrudInputsView
+from views.views_crud_messages import CrudContractMessagesView
+from controllers.check_object_exists import CheckObjectExists
 
 from models import models
 
 
-class CrudUser:
-    def user_create(self, session):
-        CrudUserView().creation_title()
-        user_confirm = False
-        while not user_confirm:
-            username_input = CrudUserView().username_input()
-            password, saltychain = CrudUserView().password_encryption()
-            full_name_input = CrudUserView().fullname_input()
-            email_input = CrudUserView().email_input(username_input)
-            phone_number_input = CrudUserView().phonenumber_input()
-            status_input = CrudUserView().status_input()
+class CrudContract:
+    def contract_create(self, session):
+        CrudContractMessagesView().creation_title()
 
-            CrudUserView().user_confirmation(
-                username_input,
-                full_name_input,
-                email_input,
-                phone_number_input,
-                status_input,
+        while True:
+            client_id_input = CrudInputsView().contract_clientid_input(session)
+            salesman_input = CrudInputsView().contract_salesmanid_input(session)
+            total_amount_input = CrudInputsView().contract_total_amount_input()
+            amount_due_input = CrudInputsView().contract_due_amount_input()
+            signed_input = CrudInputsView().contract_signed()
+
+            CrudContractMessagesView().contract_confirmation(
+                client_id_input,
+                salesman_input,
+                total_amount_input,
+                amount_due_input,
+                signed_input,
             )
 
-            confirm_input = CrudUserView().confirm_creation()
+            confirm_input = CrudInputsView().confirm_creation()
             if confirm_input:
                 break
             continue
 
         # Processing the creation
-        user = models.Users(
-            username=username_input,
-            password=password,
-            full_name=full_name_input,
-            email=email_input,
-            phone_number=phone_number_input,
-            status=status_input,
-            saltychain=saltychain,
+        contract = models.Contract(
+            client=client_id_input,
+            linked_salesman=salesman_input,
+            total_amount=total_amount_input,
+            amount_due=amount_due_input,
+            signed=signed_input,
         )
 
-        session.add(user)
+        session.add(contract)
         session.commit()
-        CrudUserView().creation_successful(user)
+        CrudContractMessagesView().creation_successful()
 
-        # print(f"saltychain: {saltychain}")
-
-    def user_update(self, session):
+    def contract_update(self, session):
         while True:
-            user_id_input = CrudUserView().update_user_id_input()
-            try:
-                user_update = (
-                    session.query(models.Users).filter_by(id=user_id_input).first()
+            contract_id_input = CrudInputsView().update_contract_id(session)
+            contract_update = CheckObjectExists().check_contractID_exists(
+                session, contract_id_input
+            )
+            if contract_update in session.query(models.Contract):
+                confirm_choice = CrudInputsView().confirm_contract_update_choice(
+                    session, contract_update
                 )
-
-            except Exception:
-                print("ERROR in the input, please try again")
+                if confirm_choice == "y":
+                    break
                 continue
-
-            confirm_choice = CrudUserView().confirm_update_choice(user_update)
-            if confirm_choice == "y":
-                break
             continue
 
-        field, value, chain = self.user_update_fieldandvalue(user_update.username)
+        field, value = self.contract_update_fieldandvalue()
         if field == "1":
-            user_update.username = value
+            contract_update.total_amount = value
         if field == "2":
-            user_update.full_name = value
+            contract_update.amount_due = value
         if field == "3":
-            user_update.email = value
-        if field == "4":
-            user_update.phone_number = value
-        if field == "5":
-            user_update.status = value
-        if field == "123":
-            user_update.password = value
-            user_update.saltychain = chain
+            contract_update.signed = value
 
         session.commit()
 
-        CrudUserView().update_successful()
+        CrudContractMessagesView().update_successful()
 
-    def user_update_fieldandvalue(self, username):
-        while True:
-            # fields = ["username", "full_name", "email", "phone_number", "status"]
-            field_to_update = input(
-                "What to update (1.username, 2.full_name, 3.email, 4.phone_number, 5.status, 123.password): "
-            )
-
-            if field_to_update not in ["1", "2", "3", "4", "5", "123"]:
-                print("\n\tERROR: Wrong input, please try again")
-                continue
-            break
+    def contract_update_fieldandvalue(self):
+        field_to_update = CrudInputsView().what_to_update_contract()
 
         if field_to_update == "1":
-            value_to_update = CrudUserView().username_input_update()
+            value_to_update = CrudInputsView().contract_total_amount_input()
         if field_to_update == "2":
-            value_to_update = CrudUserView().fullname_input()
+            value_to_update = CrudInputsView().contract_due_amount_input()
         if field_to_update == "3":
-            value_to_update = CrudUserView().email_input(username)
-        if field_to_update == "4":
-            value_to_update = CrudUserView().phonenumber_input()
-        if field_to_update == "5":
-            value_to_update = CrudUserView().status_input()
-        if field_to_update == "123":
-            value_to_update, chain = CrudUserView().password_encryption()
-            return field_to_update, value_to_update, chain
+            value_to_update = CrudInputsView().contract_signed()
 
-        return field_to_update, value_to_update, None
+        return field_to_update, value_to_update
 
-    def user_delete(self, session):
-        user_id_input = CrudUserView().remove_user_id_input()
-        user = session.query(models.Users).filter_by(id=user_id_input).first()
-        confirm_deletion = CrudUserView().remove_user_confirm_deletion(user)
-        if confirm_deletion == "y":
-            session.delete(user)
-            session.commit()
-            CrudUserView().remove_user_sucess(user)
+    def contract_display_all(self, session):
+        contracts = session.query(models.Contract)
+        CrudContractMessagesView().contract_display_all(session, contracts)
+
+    def contract_display_not_signed(self, session):
+        contracts = session.query(models.Contract)
+        for contract in contracts:
+            if not contract.signed:
+                CrudContractMessagesView().contract_display_not_signed(
+                    session, contracts
+                )
+
+    def contract_display_not_paid(self, session):
+        contracts = session.query(models.Contract)
+        CrudContractMessagesView().contract_display_not_paid(session, contracts)

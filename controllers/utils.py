@@ -20,6 +20,5 @@ class Utils:
 
     def session_init(self):
         engine = self.server_connection()
-        # return engine.connect()
         Session = sessionmaker(bind=engine)
         return Session()

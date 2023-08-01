@@ -1,5 +1,5 @@
 from views.views_crud_inputs import CrudInputsView
-from views.views_crud_messages import CrudUserMessagesView, CrudGeneralMessagesView
+from views.views_crud_messages import CrudUserMessagesView
 from controllers.check_object_exists import CheckObjectExists
 
 from models import models
@@ -7,23 +7,13 @@ from models import models
 
 class CrudUser:
     def user_create(self, session):
+        CrudUserMessagesView().creation_title()
         while True:
-            username_input = CrudInputsView().username_input()
-            if CheckObjectExists().check_username_exists(session, username_input):
-                CrudGeneralMessagesView().already_exists()
-                continue
-
+            username_input = CrudInputsView().username_input(session)
             password, saltychain = CrudInputsView().password_encryption()
-
             full_name_input = CrudInputsView().fullname_input()
-
-            email_input = CrudInputsView().email_input()
-            if CheckObjectExists().check_email_exists(session, email_input):
-                CrudGeneralMessagesView().already_exists()
-                continue
-
+            email_input = CrudInputsView().email_input(session)
             phone_number_input = CrudInputsView().phonenumber_input()
-
             status_input = CrudInputsView().status_input()
 
             CrudUserMessagesView().user_confirmation(
@@ -63,13 +53,15 @@ class CrudUser:
                 session, user_id_input
             )
             if user_update in session.query(models.Users):
-                confirm_choice = CrudInputsView().confirm_update_choice(user_update)
+                confirm_choice = CrudInputsView().confirm_user_update_choice(
+                    user_update
+                )
                 if confirm_choice == "y":
                     break
-                break
+                continue
             continue
 
-        field, value, chain = self.user_update_fieldandvalue(user_update.username)
+        field, value, chain = self.user_update_fieldandvalue(session)
         if field == "1":
             user_update.username = value
         if field == "2":
@@ -88,24 +80,25 @@ class CrudUser:
 
         CrudUserMessagesView().update_successful()
 
-    def user_update_fieldandvalue(self, username):
-        field_to_update = CrudInputsView().what_to_update()
+    def user_update_fieldandvalue(self, session):
+        field_to_update = CrudInputsView().what_to_update_user()
 
         if field_to_update == "1":
-            value_to_update = CrudInputsView().username_input()
+            value_to_update = CrudInputsView().username_input(session)
         if field_to_update == "2":
             value_to_update = CrudInputsView().fullname_input()
         if field_to_update == "3":
-            value_to_update = CrudInputsView().email_input()
+            value_to_update = CrudInputsView().email_input(session)
         if field_to_update == "4":
             value_to_update = CrudInputsView().phonenumber_input()
         if field_to_update == "5":
             value_to_update = CrudInputsView().status_input()
         if field_to_update == "password":
             value_to_update, chain = CrudInputsView().password_encryption()
-            return field_to_update, value_to_update, chain
 
-        return field_to_update, value_to_update, None
+        return field_to_update, value_to_update, chain
+
+        # return field_to_update, value_to_update, None
 
     def user_delete(self, session):
         while True:
