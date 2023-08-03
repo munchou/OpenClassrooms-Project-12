@@ -4,6 +4,11 @@ import secrets, random, hashlib
 
 from models import models
 
+from controllers.data_access_layer import (
+    DALClient,
+    DALContract,
+    DALEvent,
+)
 from controllers.check_object_exists import CheckObjectExists
 
 from views.views_crud_messages import (
@@ -378,9 +383,7 @@ class CrudInputsView:
                 continue
 
     def confirm_contract_update_choice(self, session, contract_update):
-        contract_client = (
-            session.query(models.Client).filter_by(id=contract_update.client).first()
-        )
+        contract_client = DALClient().get_client_of_contract(session, contract_update)
         while True:
             print(
                 f"\nYou are about to update [{contract_client.full_name}]'s contract."
@@ -405,8 +408,8 @@ class CrudInputsView:
             return field_to_update
 
     def event_client_name(self, session, contract_id):
-        contract = session.query(models.Contract).filter_by(id=contract_id).first()
-        client = session.query(models.Client).filter_by(id=contract.client).first()
+        contract = DALContract().get_contract_by_id(session, contract_id)
+        client = DALClient().get_client_of_contract(session, contract)
         return client.full_name
 
     def event_client_contact_input(self):
@@ -536,14 +539,8 @@ class CrudInputsView:
             print("\n\tERROR: Only digits are allowed.")
 
     def confirm_event_update_choice(self, session, event_update):
-        event_contract = (
-            session.query(models.Contract)
-            .filter_by(id=event_update.contract_id)
-            .first()
-        )
-        contract_client = (
-            session.query(models.Client).filter_by(id=event_contract.client).first()
-        )
+        event_contract = DALContract().get_contractid_of_event(session, event_update)
+        contract_client = DALClient().get_client_of_contract(session, event_contract)
         while True:
             print(
                 f"\nYou are about to update the event for [{contract_client.full_name}]'s contract (ID: {event_contract.id})."
@@ -572,7 +569,7 @@ class CrudInputsView:
             return field_to_update
 
     def event_enddate_update(self, event_id, session):
-        event = session.query(models.Event).filter_by(id=event_id).first()
+        event = DALEvent().get_event_by_id(session, event_id)
         startdate = event.start_date
         while True:
             print(f"\tEvent's start date: {startdate}.")

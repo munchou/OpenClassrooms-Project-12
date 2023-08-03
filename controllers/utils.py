@@ -1,3 +1,5 @@
+import os
+
 from controllers.config import config
 
 from views.views_authentication import AuthenticationView
@@ -22,3 +24,6 @@ class Utils:
         engine = self.server_connection()
         Session = sessionmaker(bind=engine)
         return Session()
+
+    def clear_screen():
+        os.system("cls" if os.name == "nt" else "clear")

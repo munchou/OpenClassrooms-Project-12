@@ -34,7 +34,6 @@ def main():
         # MenuManagement().menu_management(username)
     if auth_menu == 2:
         print("Sales Team MENU")
-        MenuAdmin().menu_admin(username)
     if auth_menu == 3:
         print("Support Team MENU")
 

@@ -1,5 +1,7 @@
 from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import CrudClientMessagesView
+
+from controllers.data_access_layer import DALSession, DALUser, DALClient
 from controllers.check_object_exists import CheckObjectExists
 
 from models import models
@@ -8,9 +10,7 @@ from models import models
 class CrudClient:
     def client_create(self, session, connected_user):
         CrudClientMessagesView().creation_title()
-        current_user = (
-            session.query(models.Users).filter_by(username=connected_user).first()
-        )
+        current_user = DALUser().get_current_user(session, connected_user)
 
         while True:
             full_name_input = CrudInputsView().fullname_input()
@@ -43,8 +43,7 @@ class CrudClient:
             salesman_in_charge=salesman_in_charge_autofill,
         )
 
-        session.add(client)
-        session.commit()
+        DALSession().session_add_and_commit(session, client)
         CrudClientMessagesView().creation_successful(client)
 
     def client_update(self, session):
@@ -53,7 +52,7 @@ class CrudClient:
             client_update = CheckObjectExists().check_clientID_exists(
                 session, client_id_input
             )
-            if client_update in session.query(models.Client):
+            if client_update in DALClient().get_all_clients(session):
                 confirm_choice = CrudInputsView().confirm_client_update_choice(
                     client_update
                 )
@@ -74,7 +73,7 @@ class CrudClient:
         if field == "5":
             client_update.last_contacted = value
 
-        session.commit()
+        DALSession().session_commit(session)
 
         CrudClientMessagesView().update_successful()
 
@@ -95,5 +94,5 @@ class CrudClient:
         return field_to_update, value_to_update
 
     def client_display_all(self, session):
-        clients = session.query(models.Client)
+        clients = DALClient().get_all_clients(session)
         CrudClientMessagesView().client_display_all(session, clients)

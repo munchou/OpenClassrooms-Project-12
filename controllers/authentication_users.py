@@ -1,4 +1,5 @@
 from controllers.config import config
+from controllers.data_access_layer import DALSession, DALUser, DALClient, DALContract
 from controllers.utils import Utils
 
 from views.views_authentication import AuthenticationView
@@ -44,11 +45,11 @@ class UserAuthentication:
                 AuthenticationView().user_auth_error()
                 continue
 
-            session.close()
+            DALSession().session_close(session)
             return self.check_user_status(session, username), username
 
     def check_if_user_exists(self, session, username):
-        all_users_list = session.query(models.Users.username).all()
+        all_users_list = DALUser().get_all_users_usernames(session)
         existing_usernames = []
         for t in all_users_list:
             existing_usernames.append(t[0])
@@ -57,11 +58,7 @@ class UserAuthentication:
             return 0
 
     def retrieve_salties(self, session, username):
-        user_saltychain = (
-            session.query(models.Users.saltychain)
-            .filter(models.Users.username == username)
-            .first()
-        )
+        user_saltychain = DALUser().get_user_saltychain(session, username)
 
         chains_list = str(user_saltychain[0][1:-1]).split(",")
 
@@ -78,12 +75,7 @@ class UserAuthentication:
         )
         # print(f"SALTED PASSWORD: {salted_password}")
 
-        user_hashkey = (
-            session.query(models.Users.password)
-            .filter(models.Users.username == username)
-            .first()
-        )
-        user_hashkey = user_hashkey[0][1:-1]
+        user_hashkey = DALUser().get_user_hashkey(session, username)
         # print(f"user_hashkey: {user_hashkey}")
         zupakey = hashlib.sha256(salted_password.encode("utf-8")).hexdigest()
         # print(f"zupakey: {zupakey}")
@@ -94,19 +86,15 @@ class UserAuthentication:
             return 0
 
     def check_user_status(self, session, username):
-        user_status = (
-            session.query(models.Users.status)
-            .filter(models.Users.username == username)
-            .first()
-        )
+        user = DALUser().get_user_by_username(session, username)
 
-        if user_status.status == models.Users.StatusEnum.management:
+        if user.status == models.Users.StatusEnum.management:
             AuthenticationView().user_team_management(username)
             return 1
-        if user_status.status == models.Users.StatusEnum.sales:
+        if user.status == models.Users.StatusEnum.sales:
             print(f"{username} is in the Sales Team")
             return 2
-        if user_status.status == models.Users.StatusEnum.support:
+        if user.status == models.Users.StatusEnum.support:
             print(f"{username} is in the Support Team")
             return 3
         else:

@@ -1,3 +1,4 @@
+from controllers.data_access_layer import DALSession
 from controllers.utils import Utils
 from controllers.authentication_users import UserAuthentication
 from controllers.crud_user import CrudUser
@@ -47,7 +48,7 @@ class MenuManagement:
         #     CrudSupport().assign_support_to_event(self.session)
 
         if management_choice == "8":
-            self.session.close()
+            DALSession().session_close(self.session)
             from main import main  # To avoid the idiotic circular import error...
 
             main()

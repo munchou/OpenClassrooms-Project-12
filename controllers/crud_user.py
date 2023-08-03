@@ -1,5 +1,7 @@
 from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import CrudUserMessagesView
+
+from controllers.data_access_layer import DALSession, DALUser
 from controllers.check_object_exists import CheckObjectExists
 
 from models import models
@@ -7,6 +9,9 @@ from models import models
 
 class CrudUser:
     def user_create(self, session):
+        """Create a user after filling the necessary fields.
+        If needed, each input will check that the entered
+        information is valid and can be processed."""
         CrudUserMessagesView().creation_title()
         while True:
             username_input = CrudInputsView().username_input(session)
@@ -29,7 +34,6 @@ class CrudUser:
                 break
             continue
 
-        # Processing the creation
         user = models.Users(
             username=username_input,
             password=password,
@@ -40,11 +44,8 @@ class CrudUser:
             saltychain=saltychain,
         )
 
-        session.add(user)
-        session.commit()
+        DALSession().session_add_and_commit(session, user)
         CrudUserMessagesView().creation_successful(user)
-
-        # print(f"saltychain: {saltychain}")
 
     def user_update(self, session):
         while True:
@@ -52,7 +53,7 @@ class CrudUser:
             user_update = CheckObjectExists().check_userID_exists_update_delete(
                 session, user_id_input
             )
-            if user_update in session.query(models.Users):
+            if user_update in DALUser().get_all_users(session):
                 confirm_choice = CrudInputsView().confirm_user_update_choice(
                     user_update
                 )
@@ -76,7 +77,7 @@ class CrudUser:
             user_update.password = value
             user_update.saltychain = chain
 
-        session.commit()
+        DALSession().session_commit(session)
 
         CrudUserMessagesView().update_successful()
 
@@ -95,10 +96,9 @@ class CrudUser:
             value_to_update = CrudInputsView().status_input()
         if field_to_update == "password":
             value_to_update, chain = CrudInputsView().password_encryption()
+            return field_to_update, value_to_update, chain
 
-        return field_to_update, value_to_update, chain
-
-        # return field_to_update, value_to_update, None
+        return field_to_update, value_to_update, None
 
     def user_delete(self, session):
         while True:
@@ -109,9 +109,8 @@ class CrudUser:
             if user:
                 break
             continue
-        user = session.query(models.Users).filter_by(id=user_id_input).first()
+        user = DALUser().get_user_by_id(session, user_id_input)
         confirm_deletion = CrudInputsView().remove_user_confirm_deletion(user)
         if confirm_deletion == "y":
-            session.delete(user)
-            session.commit()
+            DALSession().session_delete_and_commit(session, user)
             CrudUserMessagesView().remove_user_sucess(user)

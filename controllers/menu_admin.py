@@ -1,17 +1,16 @@
+from controllers.data_access_layer import DALSession
 from controllers.utils import Utils
-from controllers.authentication_users import UserAuthentication
 from controllers.crud_user import CrudUser
 from controllers.crud_client import CrudClient
 from controllers.crud_contract import CrudContract
 from controllers.crud_event import CrudEvent
-
-from views.views_menu_management import MenuManagementView
 
 
 class MenuAdmin:
     session = Utils().session_init()
 
     def menu_admin(self, username):
+        Utils.clear_screen()
         print("Hello, God. What will it be today?")
         print("\t1. Create a user (management team)")  # OK
         print("\t2. Update a user (management team)")  # OK
@@ -33,6 +32,7 @@ class MenuAdmin:
         print("\t16. Display events the support member is in charge of (support)")  # OK
         print("\t17. Display all the events (all the teams)")  # OK
         print("\n\tquit. DISCONNECT and go back to authentication")  # OK
+
         management_choice = input("Choice: ")
 
         if management_choice == "1":
@@ -87,7 +87,7 @@ class MenuAdmin:
             CrudEvent().event_display_all(self.session)
 
         if management_choice == "quit":
-            self.session.close()
+            DALSession().session_close(self.session)
             from main import main  # To avoid the idiotic circular import error...
 
             main()

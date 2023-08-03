@@ -1,5 +1,12 @@
 from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import CrudContractMessagesView, CrudEventMessagesView
+
+from controllers.data_access_layer import (
+    DALSession,
+    DALUser,
+    DALContract,
+    DALEvent,
+)
 from controllers.check_object_exists import CheckObjectExists
 
 from models import models
@@ -11,12 +18,11 @@ class CrudEvent:
 
         while True:
             contract_id_input = CrudInputsView().update_contract_id(session)
-            contract = (
-                session.query(models.Contract).filter_by(id=contract_id_input).first()
-            )
+            contract = DALContract().get_contract_by_id(session, contract_id_input)
             if not contract.signed:
                 CrudEventMessagesView().contract_not_signed()
-                session.close()
+                DALSession().session_close(session)
+
                 from main import main
 
                 main()
@@ -62,8 +68,7 @@ class CrudEvent:
             notes=notes_input,
         )
 
-        session.add(event)
-        session.commit()
+        DALSession().session_add_and_commit(session, event)
         CrudEventMessagesView().creation_successful()
 
     def event_update_add_support(self, session):
@@ -72,7 +77,7 @@ class CrudEvent:
             event_update = CheckObjectExists().check_eventID_exists(
                 session, event_id_input
             )
-            if event_update in session.query(models.Event):
+            if event_update in DALEvent().get_all_events(session):
                 confirm_choice = CrudInputsView().confirm_event_update_choice(
                     session, event_update
                 )
@@ -85,7 +90,7 @@ class CrudEvent:
 
         event_update.support_contact = support_contact_input
 
-        session.commit()
+        DALSession().session_commit(session)
         CrudEventMessagesView().support_update_successful()
 
     def event_update(self, session):
@@ -94,7 +99,7 @@ class CrudEvent:
             event_update = CheckObjectExists().check_eventID_exists(
                 session, event_id_input
             )
-            if event_update in session.query(models.Event):
+            if event_update in DALEvent().get_all_events(session):
                 confirm_choice = CrudInputsView().confirm_event_update_choice(
                     session, event_update
                 )
@@ -119,8 +124,7 @@ class CrudEvent:
         if field == "7":
             event_update.notes = value
 
-        session.commit()
-
+        DALSession().session_commit(session)
         CrudEventMessagesView().update_successful()
 
     def event_update_fieldandvalue(self, event_id, session):
@@ -144,11 +148,11 @@ class CrudEvent:
         return field_to_update, value_to_update
 
     def contract_display_all(self, session):
-        contracts = session.query(models.Contract)
+        contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_all(session, contracts)
 
     def contract_display_not_signed(self, session):
-        contracts = session.query(models.Contract)
+        contracts = DALContract().get_all_contracts(session)
         for contract in contracts:
             if not contract.signed:
                 CrudContractMessagesView().contract_display_not_signed(
@@ -156,18 +160,18 @@ class CrudEvent:
                 )
 
     def contract_display_not_paid(self, session):
-        contracts = session.query(models.Contract)
+        contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_not_paid(session, contracts)
 
     def event_display_no_support(self, session):
-        events = session.query(models.Event)
+        events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_no_support(events)
 
     def event_display_for_supportincharge(self, session, user):
-        user = session.query(models.Users).filter_by(username=user).first()
-        events = session.query(models.Event).filter_by(support_contact=user.id).all()
+        user = DALUser().get_user_by_username(session, user)
+        events = DALEvent().get_events_by_supportid(session, user)
         CrudEventMessagesView().event_display_for_supportincharge(session, events)
 
     def event_display_all(self, session):
-        events = session.query(models.Event)
+        events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_all(session, events)

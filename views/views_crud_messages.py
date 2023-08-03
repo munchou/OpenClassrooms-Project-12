@@ -1,5 +1,12 @@
 from models import models
 
+from controllers.data_access_layer import (
+    DALUser,
+    DALClient,
+    DALContract,
+    DALEvent,
+)
+
 
 class CrudUserMessagesView:
     def __init__(self):
@@ -61,10 +68,8 @@ class CrudClientMessagesView:
             print(f"\tName of the company: {client.company_name}")
             print(f"\tDate of creation: {client.created_on}")
             print(f"\tLast contacted: {client.last_contacted}")
-            salesman_in_charge = (
-                session.query(models.Users)
-                .filter_by(id=client.salesman_in_charge)
-                .first()
+            salesman_in_charge = DALUser().get_user_by_id(
+                session, client.salesman_in_charge
             )
             print(
                 f"\tSalesman in charge: {salesman_in_charge.full_name} (ID: {salesman_in_charge.id})\n"
@@ -110,12 +115,10 @@ class CrudContractMessagesView:
 
     def contract_display_all(self, session, contracts):
         for contract in contracts:
-            client = session.query(models.Client).filter_by(id=contract.client).first()
-            print(f"Contract ID: {contract.id} | {client.full_name}")
-            salesman_in_charge = (
-                session.query(models.Users)
-                .filter_by(id=contract.linked_salesman)
-                .first()
+            client = DALClient().get_client_by_id(session, contract.client)
+            print(f"\tContract ID: {contract.id} | {client.full_name}")
+            salesman_in_charge = DALUser().get_user_by_id(
+                session, contract.linked_salesman
             )
             print(
                 f"\tSalesman in charge: {salesman_in_charge.full_name} (ID: {salesman_in_charge.id})"
@@ -133,14 +136,10 @@ class CrudContractMessagesView:
         print("\tCONTRACTS THAT HAVEN'T BEEN SIGNED YET:\n")
         for contract in contracts:
             if not contract.signed:
-                client = (
-                    session.query(models.Client).filter_by(id=contract.client).first()
-                )
+                client = DALClient().get_client_by_id(session, contract.client)
                 print(f"Contract ID: {contract.id} | {client.full_name}")
-                salesman_in_charge = (
-                    session.query(models.Users)
-                    .filter_by(id=contract.linked_salesman)
-                    .first()
+                salesman_in_charge = DALUser().get_user_by_id(
+                    session, contract.linked_salesman
                 )
                 print(
                     f"\tSalesman in charge: {salesman_in_charge.full_name} (ID: {salesman_in_charge.id})"
@@ -153,14 +152,10 @@ class CrudContractMessagesView:
         print("\tCONTRACTS THAT HAVEN'T BEEN FULLY PAID YET:\n")
         for contract in contracts:
             if contract.amount_due > 0:
-                client = (
-                    session.query(models.Client).filter_by(id=contract.client).first()
-                )
+                client = DALClient().get_client_by_id(session, contract.client)
                 print(f"Contract ID: {contract.id} | {client.full_name}")
-                salesman_in_charge = (
-                    session.query(models.Users)
-                    .filter_by(id=contract.linked_salesman)
-                    .first()
+                salesman_in_charge = DALUser().get_user_by_id(
+                    session, contract.linked_salesman
                 )
                 print(
                     f"\tSalesman in charge: {salesman_in_charge.full_name} (ID: {salesman_in_charge.id})"
@@ -248,9 +243,7 @@ class CrudEventMessagesView:
             print(f"\tClient's contact information: {event.client_contact}")
             print(f"\tStart date: {event.start_date}")
             print(f"\tEnd date: {event.end_date}")
-            support_in_charge = (
-                session.query(models.Users).filter_by(id=event.support_contact).first()
-            )
+            support_in_charge = DALUser().get_user_by_id(session, event.support_contact)
             print(
                 f"\tSupport member in charge: {support_in_charge.full_name} (ID: {support_in_charge.id})"
             )
@@ -284,9 +277,7 @@ class CrudEventMessagesView:
             print(f"\tClient's contact information: {event.client_contact}")
             print(f"\tStart date: {event.start_date}")
             print(f"\tEnd date: {event.end_date}")
-            support_in_charge = (
-                session.query(models.Users).filter_by(id=event.support_contact).first()
-            )
+            support_in_charge = DALUser().get_user_by_id(session, event.support_contact)
             print(
                 f"\tSupport member in charge: {support_in_charge.full_name} (ID: {support_in_charge.id})"
             )

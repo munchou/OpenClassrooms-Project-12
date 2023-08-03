@@ -1,5 +1,7 @@
 from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import CrudContractMessagesView
+
+from controllers.data_access_layer import DALSession, DALUser, DALClient, DALContract
 from controllers.check_object_exists import CheckObjectExists
 
 from models import models
@@ -38,8 +40,7 @@ class CrudContract:
             signed=signed_input,
         )
 
-        session.add(contract)
-        session.commit()
+        DALSession().session_add_and_commit(session, contract)
         CrudContractMessagesView().creation_successful()
 
     def contract_update(self, session):
@@ -48,7 +49,7 @@ class CrudContract:
             contract_update = CheckObjectExists().check_contractID_exists(
                 session, contract_id_input
             )
-            if contract_update in session.query(models.Contract):
+            if contract_update in DALContract().get_all_contracts(session):
                 confirm_choice = CrudInputsView().confirm_contract_update_choice(
                     session, contract_update
                 )
@@ -65,8 +66,7 @@ class CrudContract:
         if field == "3":
             contract_update.signed = value
 
-        session.commit()
-
+        DALSession().session_commit(session)
         CrudContractMessagesView().update_successful()
 
     def contract_update_fieldandvalue(self):
@@ -82,11 +82,11 @@ class CrudContract:
         return field_to_update, value_to_update
 
     def contract_display_all(self, session):
-        contracts = session.query(models.Contract)
+        contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_all(session, contracts)
 
     def contract_display_not_signed(self, session):
-        contracts = session.query(models.Contract)
+        contracts = DALContract().get_all_contracts(session)
         for contract in contracts:
             if not contract.signed:
                 CrudContractMessagesView().contract_display_not_signed(
@@ -94,5 +94,5 @@ class CrudContract:
                 )
 
     def contract_display_not_paid(self, session):
-        contracts = session.query(models.Contract)
+        contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_not_paid(session, contracts)
