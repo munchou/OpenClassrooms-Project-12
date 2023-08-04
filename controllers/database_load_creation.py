@@ -1,5 +1,6 @@
 from controllers.config import config, ini_update_database
 from controllers.crud_user import CrudUser
+from controllers.utils import Utils
 
 from sqlalchemy_utils import create_database, database_exists
 
@@ -33,6 +34,7 @@ class DatabaseCreation:
     # session = Utils().session_init()
 
     def admin_menu(self, username):
+        Utils.clear_screen()
         session = self.session_init()
         admin_menu = AuthenticationView().admin_menu(username)
 

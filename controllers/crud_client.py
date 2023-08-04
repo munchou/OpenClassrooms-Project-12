@@ -1,6 +1,7 @@
 from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import CrudClientMessagesView
 
+from controllers.utils import Utils
 from controllers.data_access_layer import DALSession, DALUser, DALClient
 from controllers.check_object_exists import CheckObjectExists
 
@@ -9,6 +10,7 @@ from models import models
 
 class CrudClient:
     def client_create(self, session, connected_user):
+        Utils().check_password_input(session, connected_user)
         CrudClientMessagesView().creation_title()
         current_user = DALUser().get_current_user(session, connected_user)
 
@@ -46,7 +48,8 @@ class CrudClient:
         DALSession().session_add_and_commit(session, client)
         CrudClientMessagesView().creation_successful(client)
 
-    def client_update(self, session):
+    def client_update(self, session, username):
+        Utils().check_password_input(session, username)
         while True:
             client_id_input = CrudInputsView().contract_clientid_input(session)
             client_update = CheckObjectExists().check_clientID_exists(

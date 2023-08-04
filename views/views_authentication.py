@@ -88,3 +88,11 @@ class AuthenticationView:
 
     def user_team_support(self, username):
         print(f"{username} is in the Support Team")
+
+    def crud_password_check_wrong(self):
+        print("Wrong password, you are going to be disconnected.")
+        while True:
+            enter_input = input("Press ENTER to continue. ")
+            if enter_input == "":
+                break
+            continue

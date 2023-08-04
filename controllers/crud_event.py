@@ -1,6 +1,7 @@
 from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import CrudContractMessagesView, CrudEventMessagesView
 
+from controllers.utils import Utils
 from controllers.data_access_layer import (
     DALSession,
     DALUser,
@@ -13,7 +14,8 @@ from models import models
 
 
 class CrudEvent:
-    def event_create(self, session):
+    def event_create(self, session, username):
+        Utils().check_password_input(session, username)
         CrudEventMessagesView().creation_title()
 
         while True:
@@ -71,7 +73,8 @@ class CrudEvent:
         DALSession().session_add_and_commit(session, event)
         CrudEventMessagesView().creation_successful()
 
-    def event_update_add_support(self, session):
+    def event_update_add_support(self, session, username):
+        Utils().check_password_input(session, username)
         while True:
             event_id_input = CrudInputsView().update_event_id(session)
             event_update = CheckObjectExists().check_eventID_exists(
@@ -93,7 +96,8 @@ class CrudEvent:
         DALSession().session_commit(session)
         CrudEventMessagesView().support_update_successful()
 
-    def event_update(self, session):
+    def event_update(self, session, username):
+        Utils().check_password_input(session, username)
         while True:
             event_id_input = CrudInputsView().update_event_id(session)
             event_update = CheckObjectExists().check_eventID_exists(

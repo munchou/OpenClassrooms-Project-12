@@ -1,6 +1,7 @@
 from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import CrudUserMessagesView
 
+from controllers.utils import Utils
 from controllers.data_access_layer import DALSession, DALUser
 from controllers.check_object_exists import CheckObjectExists
 
@@ -8,10 +9,12 @@ from models import models
 
 
 class CrudUser:
-    def user_create(self, session):
+    def user_create(self, session, username):
         """Create a user after filling the necessary fields.
         If needed, each input will check that the entered
         information is valid and can be processed."""
+        Utils().check_password_input(session, username)
+
         CrudUserMessagesView().creation_title()
         while True:
             username_input = CrudInputsView().username_input(session)
@@ -47,7 +50,8 @@ class CrudUser:
         DALSession().session_add_and_commit(session, user)
         CrudUserMessagesView().creation_successful(user)
 
-    def user_update(self, session):
+    def user_update(self, session, username):
+        Utils().check_password_input(session, username)
         while True:
             user_id_input = CrudInputsView().update_user_id_input()
             user_update = CheckObjectExists().check_userID_exists_update_delete(
@@ -100,7 +104,8 @@ class CrudUser:
 
         return field_to_update, value_to_update, None
 
-    def user_delete(self, session):
+    def user_delete(self, session, username):
+        Utils().check_password_input(session, username)
         while True:
             user_id_input = CrudInputsView().remove_user_id_input()
             user = CheckObjectExists().check_userID_exists_update_delete(

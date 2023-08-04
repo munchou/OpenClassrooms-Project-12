@@ -1,5 +1,80 @@
 import pytest
-from datetime import datetime, timedelta
+
+import os
+import hashlib
+import enum
+
+from sqlalchemy import (
+    Column,
+    Enum,
+    Integer,
+    Float,
+    String,
+    Text,
+    Boolean,
+    DateTime,
+    CheckConstraint,
+    ForeignKey,
+)
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+from controllers.data_access_layer import DALSession, DALUser
+from controllers.config import config
+
+from views.views_crud_inputs import CrudInputsView
+from views.views_authentication import AuthenticationView
+
+from models import models
+
+Base = declarative_base()
+
+
+@pytest.fixture(scope="session")
+def server_connection():
+    # params = config()
+    # engine = create_engine(
+    #             f"postgresql://{params['user']}:{params['password']}@{params['host']}:{params['port']}/{params['database']}"
+    #         )
+    engine = create_engine(
+        "postgresql://test_db_user:test_db_password@test_db_host:test_db_port]/test_db_database"
+    )
+    return engine
+
+
+@pytest.fixture(scope="session")
+def session_init():
+    engine = server_connection()
+    Session = sessionmaker(bind=engine)
+    return Session()
+
+
+@pytest.fixture(scope="session")
+def setup_database(connection):
+    models.Base.metadata.bind = connection
+    models.Base.metadata.create_all()
+
+    seed_database()
+
+    yield
+
+    models.Base.metadata.drop_all()
+
+
+def seed_database():
+    users = [
+        {
+            "id": 1,
+            "name": "John Doe",
+        },
+        # ...
+    ]
+
+    for user in users:
+        db_user = User(**user)
+        db_session.add(db_user)
+    db_session.commit()
 
 
 @pytest.fixture(scope="function", autouse=True)

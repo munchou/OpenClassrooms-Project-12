@@ -604,3 +604,6 @@ class CrudInputsView:
             else:
                 print("\n\tERROR in the input, please try again.\n")
                 continue
+
+    def crud_password_check_input(self):
+        return getpass("Please confirm your password in order to proceed: ")

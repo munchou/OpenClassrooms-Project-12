@@ -24,6 +24,7 @@ class UserAuthentication:
     #         AuthenticationView().authentication_error()
 
     def user_authentication(self):
+        Utils.clear_screen()
         while True:
             username, password = AuthenticationView().input_user(
                 self.params["database"]

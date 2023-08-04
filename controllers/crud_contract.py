@@ -1,14 +1,16 @@
 from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import CrudContractMessagesView
 
-from controllers.data_access_layer import DALSession, DALUser, DALClient, DALContract
+from controllers.utils import Utils
+from controllers.data_access_layer import DALSession, DALContract
 from controllers.check_object_exists import CheckObjectExists
 
 from models import models
 
 
 class CrudContract:
-    def contract_create(self, session):
+    def contract_create(self, session, username):
+        Utils().check_password_input(session, username)
         CrudContractMessagesView().creation_title()
 
         while True:
@@ -43,7 +45,8 @@ class CrudContract:
         DALSession().session_add_and_commit(session, contract)
         CrudContractMessagesView().creation_successful()
 
-    def contract_update(self, session):
+    def contract_update(self, session, username):
+        Utils().check_password_input(session, username)
         while True:
             contract_id_input = CrudInputsView().update_contract_id(session)
             contract_update = CheckObjectExists().check_contractID_exists(

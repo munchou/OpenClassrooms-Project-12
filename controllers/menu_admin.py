@@ -1,4 +1,3 @@
-from controllers.data_access_layer import DALSession
 from controllers.utils import Utils
 from controllers.crud_user import CrudUser
 from controllers.crud_client import CrudClient
@@ -31,33 +30,33 @@ class MenuAdmin:
         print("\t15. Update an event (support member in charge of it)")  # OK
         print("\t16. Display events the support member is in charge of (support)")  # OK
         print("\t17. Display all the events (all the teams)")  # OK
-        print("\n\tquit. DISCONNECT and go back to authentication")  # OK
+        print("\n\tdisconnect. DISCONNECT and go back to authentication")  # OK
 
         management_choice = input("Choice: ")
 
         if management_choice == "1":
-            CrudUser().user_create(self.session)
+            CrudUser().user_create(self.session, username)
 
         if management_choice == "2":
-            CrudUser().user_update(self.session)
+            CrudUser().user_update(self.session, username)
 
         if management_choice == "3":
-            CrudUser().user_delete(self.session)
+            CrudUser().user_delete(self.session, username)
 
         if management_choice == "4":
             CrudClient().client_create(self.session, username)
 
         if management_choice == "5":
-            CrudClient().client_update(self.session)
+            CrudClient().client_update(self.session, username)
 
         if management_choice == "6":
             CrudClient().client_display_all(self.session)
 
         if management_choice == "7":
-            CrudContract().contract_create(self.session)
+            CrudContract().contract_create(self.session, username)
 
         if management_choice == "8":
-            CrudContract().contract_update(self.session)
+            CrudContract().contract_update(self.session, username)
 
         if management_choice == "9":
             CrudContract().contract_display_all(self.session)
@@ -69,16 +68,16 @@ class MenuAdmin:
             CrudContract().contract_display_not_paid(self.session)
 
         if management_choice == "12":
-            CrudEvent().event_create(self.session)
+            CrudEvent().event_create(self.session, username)
 
         if management_choice == "13":
             CrudEvent().event_display_no_support(self.session)
 
         if management_choice == "14":
-            CrudEvent().event_update_add_support(self.session)
+            CrudEvent().event_update_add_support(self.session, username)
 
         if management_choice == "15":
-            CrudEvent().event_update(self.session)
+            CrudEvent().event_update(self.session, username)
 
         if management_choice == "16":
             CrudEvent().event_display_for_supportincharge(self.session, username)
@@ -86,8 +85,5 @@ class MenuAdmin:
         if management_choice == "17":
             CrudEvent().event_display_all(self.session)
 
-        if management_choice == "quit":
-            DALSession().session_close(self.session)
-            from main import main  # To avoid the idiotic circular import error...
-
-            main()
+        if management_choice == "disconnect":
+            Utils().disconnect_and_back_to_authentication(self.session)
