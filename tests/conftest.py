@@ -1,111 +1,177 @@
 import pytest
-
 import os
-import hashlib
-import enum
+import os.path
 
-from sqlalchemy import (
-    Column,
-    Enum,
-    Integer,
-    Float,
-    String,
-    Text,
-    Boolean,
-    DateTime,
-    CheckConstraint,
-    ForeignKey,
-)
+import secrets, random, hashlib
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base, scoped_session
 
+from controllers.first_connection import FirstLaunch
 from controllers.data_access_layer import DALSession, DALUser
-from controllers.config import config
+from tests.conftest_database import TestDatabaseCreation
 
+from tests.conftest_views import StartProgramView
 from views.views_crud_inputs import CrudInputsView
 from views.views_authentication import AuthenticationView
 
 from models import models
 
-Base = declarative_base()
+
+class IniFile:
+    def check_if_exists(self):
+        path = "tests/test_database.ini"
+        check_file = os.path.isfile(path)
+        if not check_file:
+            self.create_ini()
+
+    def create_ini(self):
+        """Create the INI (= configuration) file based on
+        the user input in the main folder of the program.
+        Then goes to the load/creation of the DB."""
+
+        StartProgramView().first_prompt()
+        config_file = False
+        while not config_file:
+            config_host_input = StartProgramView().input_config_host()
+            config_port_input = StartProgramView().input_config_port()
+            while True:
+                config_database_input = StartProgramView().input_config_database()
+                if config_database_input == "postgres":
+                    break
+                if config_database_input.strip() == "":
+                    StartProgramView().wrong_input()
+                    continue
+                else:
+                    break
+            config_user_input = StartProgramView().input_config_user()
+            config_password_input = StartProgramView().input_config_password()
+
+            StartProgramView().confirm_config_details(
+                config_host_input,
+                config_port_input,
+                config_database_input,
+                config_user_input,
+                config_password_input,
+            )
+
+            while True:
+                confirm_input = StartProgramView().confirm_input()
+                if confirm_input == "y":
+                    config_file = True
+                    break
+                elif confirm_input != "n":
+                    continue
+                break
+            continue
+
+        TestDatabaseCreation().create_ini(
+            config_host_input,
+            config_port_input,
+            config_database_input,
+            config_user_input,
+            config_password_input,
+        )
+
+        # TestDatabaseCreation().create_load_database()
 
 
-@pytest.fixture(scope="session")
-def server_connection():
-    # params = config()
-    # engine = create_engine(
-    #             f"postgresql://{params['user']}:{params['password']}@{params['host']}:{params['port']}/{params['database']}"
-    #         )
+@pytest.fixture(scope="session", autouse=True)
+def connection():
+    params = TestDatabaseCreation().config()
     engine = create_engine(
-        "postgresql://test_db_user:test_db_password@test_db_host:test_db_port]/test_db_database"
+        f"postgresql://{params['user']}:{params['password']}@{params['host']}:{params['port']}/{params['database']}"
     )
     return engine
 
 
-@pytest.fixture(scope="session")
-def session_init():
-    engine = server_connection()
-    Session = sessionmaker(bind=engine)
-    return Session()
+@pytest.fixture(scope="session", autouse=True)
+def session(connection):
+    models.Base.metadata.create_all(connection)
+    Session = sessionmaker(bind=connection)
+    add_users(Session())
+    yield Session()
+    Session().close()
+    models.Base.metadata.drop_all(connection)
 
 
-@pytest.fixture(scope="session")
-def setup_database(connection):
-    models.Base.metadata.bind = connection
-    models.Base.metadata.create_all()
+def password_encryption():
+    password = "qqqqqqqq"
+    """Password salting and hashing. Good luck to hackers..."""
+    numbers = [4, 5, 6, 7, 8]
+    salty_first = secrets.token_hex(random.choice(numbers))
+    salty_second = secrets.token_hex(random.choice(numbers))
+    salty_third = secrets.token_hex(random.choice(numbers))
+    salty_chain = []
+    salty_chain.extend((salty_first, salty_second, salty_third))
+    salted_password = (
+        f"{salty_first}{password[:4]}{salty_second}{password[4:]}{salty_third}"
+    )
 
-    seed_database()
-
-    yield
-
-    models.Base.metadata.drop_all()
-
-
-def seed_database():
-    users = [
-        {
-            "id": 1,
-            "name": "John Doe",
-        },
-        # ...
-    ]
-
-    for user in users:
-        db_user = User(**user)
-        db_session.add(db_user)
-    db_session.commit()
+    zupakey = [hashlib.sha256(salted_password.encode("utf-8")).hexdigest()]
+    return zupakey, salty_chain
 
 
-@pytest.fixture(scope="function", autouse=True)
-def clubs(monkeypatch):
-    mock_clubs = [
-        {"name": "Club 101", "email": "club101@gmail.com", "points": "13"},
-        {"name": "Club 102", "email": "club102@gmail.com", "points": "4"},
-        {"name": "Club 103", "email": "club103@gmail.com", "points": "30"},
-    ]
-    monkeypatch.setattr("server.clubs", mock_clubs)
+def add_users(session):
+    password, saltychain = password_encryption()
+    test_user_one = models.Users(
+        username="User1",
+        password=password,
+        full_name="User One",
+        email="user1@testouille.com",
+        phone_number="+819065504495",
+        status="management",
+        saltychain=saltychain,
+    )
 
+    password, saltychain = password_encryption()
+    test_user_two = models.Users(
+        username="User2",
+        password=password,
+        full_name="User Two",
+        email="user2@testouille.com",
+        phone_number="911",
+        status="sales",
+        saltychain=saltychain,
+    )
 
-@pytest.fixture(scope="function", autouse=True)
-def competitions(monkeypatch):
-    future_date = (datetime.now() + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
-    past_date = (datetime.now() + timedelta(hours=-1)).strftime("%Y-%m-%d %H:%M:%S")
+    password, saltychain = password_encryption()
+    test_user_three = models.Users(
+        username="User3",
+        password=password,
+        full_name="User Three",
+        email="user3@testouille.com",
+        phone_number="+33780041253",
+        status="support",
+        saltychain=saltychain,
+    )
 
-    mock_competitions = [
-        {"name": "Competition 101", "date": future_date, "numberOfPlaces": "132"},
-        {"name": "Competition 102", "date": past_date, "numberOfPlaces": "10"},
-    ]
-    monkeypatch.setattr("server.competitions", mock_competitions)
+    try:
+        user_one_exists = (
+            session.query(models.Users).filter_by(username="User1").first()
+        )
+        if not user_one_exists:
+            session.add(test_user_one)
+            session.commit()
+    except Exception:
+        pass
 
+    try:
+        user_two_exists = (
+            session.query(models.Users).filter_by(username="User2").first()
+        )
+        if not user_two_exists:
+            session.add(test_user_two)
+            session.commit()
+    except Exception:
+        pass
 
-@pytest.fixture(scope="function", autouse=True)
-def booked_seats(monkeypatch):
-    mock_booked_seats = [
-        {
-            "club": "Club 101",
-            "competition": "Competition 101",
-            "booked_seats": 0,
-        },
-    ]
-    monkeypatch.setattr("server.all_booked_seats", mock_booked_seats)
+    try:
+        user_three_exists = (
+            session.query(models.Users).filter_by(username="User3").first()
+        )
+        if not user_three_exists:
+            session.add(test_user_three)
+            session.commit()
+    except Exception:
+        pass

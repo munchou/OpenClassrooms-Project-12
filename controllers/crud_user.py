@@ -77,7 +77,7 @@ class CrudUser:
             user_update.phone_number = value
         if field == "5":
             user_update.status = value
-        if field == "123":
+        if field == "password":
             user_update.password = value
             user_update.saltychain = chain
 

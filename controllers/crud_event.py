@@ -151,22 +151,6 @@ class CrudEvent:
 
         return field_to_update, value_to_update
 
-    def contract_display_all(self, session):
-        contracts = DALContract().get_all_contracts(session)
-        CrudContractMessagesView().contract_display_all(session, contracts)
-
-    def contract_display_not_signed(self, session):
-        contracts = DALContract().get_all_contracts(session)
-        for contract in contracts:
-            if not contract.signed:
-                CrudContractMessagesView().contract_display_not_signed(
-                    session, contracts
-                )
-
-    def contract_display_not_paid(self, session):
-        contracts = DALContract().get_all_contracts(session)
-        CrudContractMessagesView().contract_display_not_paid(session, contracts)
-
     def event_display_no_support(self, session):
         events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_no_support(events)

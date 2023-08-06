@@ -22,9 +22,9 @@ class CrudInputsView:
     def __init__(self):
         pass
 
-    @staticmethod
-    def creation_title():
-        print("CREATION OF A CLIENT:")
+    # @staticmethod
+    # def creation_title():
+    #     print("CREATION OF A CLIENT:")
 
     def check_input_characters(self, input_to_check):
         input_is_ascii = True

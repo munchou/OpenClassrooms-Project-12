@@ -6,17 +6,11 @@ from views.views_start import StartProgramView
 
 
 class FirstLaunch:
-    def check_ini_exists(self):
-        """Check if the INI (= configuration) file exists.
-        If not, create the INI file based on the user input
-        in the main folder of the program. Then goes to the
-        load/creation of the DB.
-        If the INI file already exists, skip its creation
-        and directly goes to the next step."""
-        # path = "database.ini"
-        # check_file = os.path.isfile(path)
+    def create_ini(self):
+        """Create the INI (= configuration) file based on
+        the user input in the main folder of the program.
+        Then goes to the load/creation of the DB."""
 
-        # if not check_file:
         StartProgramView().first_prompt()
         config_file = False
         while not config_file:
