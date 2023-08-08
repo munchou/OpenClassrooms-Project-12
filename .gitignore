@@ -5,3 +5,4 @@ _oldfiles
 *.ini
 *.bat
 *.txt
+.coverage

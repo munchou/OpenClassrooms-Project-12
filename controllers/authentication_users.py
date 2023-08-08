@@ -1,5 +1,5 @@
 from controllers.config import config
-from controllers.data_access_layer import DALSession, DALUser, DALClient, DALContract
+from controllers.data_access_layer import DALSession, DALUser
 from controllers.utils import Utils
 
 from views.views_authentication import AuthenticationView
@@ -10,18 +10,6 @@ import random, hashlib, secrets
 
 class UserAuthentication:
     params = config()
-
-    # def server_connection(self):
-    #     # params = config()
-
-    #     try:
-    #         engine = create_engine(
-    #             f"postgresql://{self.params['user']}:{self.params['password']}@{self.params['host']}:{self.params['port']}/{self.params['database']}"
-    #         )
-    #         # engine.connect()
-    #         return engine
-    #     except Exception:
-    #         AuthenticationView().authentication_error()
 
     def user_authentication(self):
         Utils.clear_screen()

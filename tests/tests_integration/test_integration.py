@@ -1,14 +1,8 @@
-from sqlalchemy import exc
 from models import models
 from datetime import datetime
 
-from views.views_crud_inputs import CrudInputsView
 from views.views_crud_messages import (
     CrudUserMessagesView,
-    CrudClientMessagesView,
-    CrudContractMessagesView,
-    CrudEventMessagesView,
-    CrudGeneralMessagesView,
 )
 
 from controllers.utils import Utils
@@ -42,15 +36,48 @@ class TestIntegrationUser:
 
     def test_user_create(self, session):
         password, saltychain = self.password_encryption()
+
+        CrudUserMessagesView().creation_title()
+        while True:
+            username_input = "TestUser"
+            password, saltychain = password, saltychain
+            full_name_input = "Test User"
+            email_input = "test_user@testouille.com"
+            phone_number_input = "145645007"
+            status_input = "management"
+
+            CrudUserMessagesView().user_confirmation(
+                username_input,
+                full_name_input,
+                email_input,
+                phone_number_input,
+                status_input,
+            )
+
+            confirm_input = True
+            if confirm_input:
+                break
+            continue
+
         test_user = models.Users(
-            username="TestUser",
+            username=username_input,
             password=password,
-            full_name="Test User",
-            email="test_user@testouille.com",
-            phone_number="145645007",
-            status="management",
+            full_name=full_name_input,
+            email=email_input,
+            phone_number=phone_number_input,
+            status=status_input,
             saltychain=saltychain,
         )
+
+        # test_user = models.Users(
+        #     username="TestUser",
+        #     password=password,
+        #     full_name="Test User",
+        #     email="test_user@testouille.com",
+        #     phone_number="145645007",
+        #     status="management",
+        #     saltychain=saltychain,
+        # )
 
         try:
             test_user_exists = (

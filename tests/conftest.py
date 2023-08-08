@@ -5,15 +5,11 @@ import os.path
 import secrets, random, hashlib
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base, scoped_session
+from sqlalchemy.orm import sessionmaker
 
-from controllers.first_connection import FirstLaunch
-from controllers.data_access_layer import DALSession, DALUser
 from tests.conftest_database import TestDatabaseCreation
 
 from tests.conftest_views import StartProgramView
-from views.views_crud_inputs import CrudInputsView
-from views.views_authentication import AuthenticationView
 
 from models import models
 

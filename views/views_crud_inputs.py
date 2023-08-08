@@ -190,10 +190,10 @@ class CrudInputsView:
             print(
                 f"\n\tCurrent date and time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
             )
-            current_time = input("\tUse the current time? (y/n)? ").casefold()
-            if current_time == "y":
+            current_date = input("\tUse the current date? (y/n)? ").casefold()
+            if current_date == "y":
                 return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            if current_time == "n":
+            if current_date == "n":
                 while True:
                     year = input("\tYear: ")
                     month = input("\tMonth: ")
@@ -289,10 +289,10 @@ class CrudInputsView:
             print("Input error, please try again.")
             continue
 
-    def update_client_id_input(self):
-        user_id = input("Please enter the ID of the client you wish to update: ")
-        # if user_id.isdigit():
-        return user_id
+    # def update_client_id_input(self):
+    #     user_id = input("Please enter the ID of the client you wish to update: ")
+    #     # if user_id.isdigit():
+    #     return user_id
 
     def confirm_client_update_choice(self, client_update):
         while True:
