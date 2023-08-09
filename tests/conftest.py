@@ -69,7 +69,7 @@ class IniFile:
             config_password_input,
         )
 
-        # TestDatabaseCreation().create_load_database()
+        TestDatabaseCreation().create_load_database()
 
 
 @pytest.fixture(scope="session", autouse=True)
