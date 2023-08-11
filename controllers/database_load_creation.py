@@ -1,8 +1,7 @@
 from controllers.config import config, ini_update_database
-from controllers.crud_user import CrudUser
-from controllers.utils import Utils
+from controllers.menu_admin import MenuAdmin
 
-from sqlalchemy_utils import create_database, database_exists
+from sqlalchemy_utils import create_database
 
 from views.views_start import StartProgramView
 from views.views_create_load_db import LoadCreateDBView
@@ -30,24 +29,6 @@ class DatabaseCreation:
 
         Session = sessionmaker(bind=engine)
         return Session()
-
-    # session = Utils().session_init()
-
-    def admin_menu(self, username):
-        Utils.clear_screen()
-        session = self.session_init()
-        admin_menu = AuthenticationView().admin_menu(username)
-
-        if admin_menu == "1":
-            CrudUser().user_create(session)
-        if admin_menu == "2":
-            CrudUser().user_update(session)
-        if admin_menu == "3":
-            CrudUser().user_delete(session)
-        if admin_menu == "4":
-            self.special_authentication()
-        if admin_menu == "5":
-            self.tables_delete(username)
 
     def special_authentication(self):
         while True:
@@ -162,4 +143,4 @@ class DatabaseCreation:
             Base.metadata.drop_all(engine)
             print("Tables successfully deleted")
 
-        self.admin_menu(username)
+        MenuAdmin().menu_admin(username)

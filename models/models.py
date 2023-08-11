@@ -14,7 +14,7 @@ from sqlalchemy import (
     ForeignKey,
 )
 
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -24,6 +24,7 @@ class Users(Base):
         management = 1
         sales = 2
         support = 3
+        deactivated = 404
 
     __tablename__ = "users"
     id = Column(Integer(), primary_key=True)

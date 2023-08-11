@@ -57,18 +57,58 @@ class AuthenticationView:
         password_input = getpass("\tpassword: ")
         return username_input, password_input
 
-    def admin_menu(self, username):
+    def admin_menu(self):
+        from controllers.utils import Utils
+
+        Utils().clear_screen()
         while True:
-            print(f"WECOME, {username}")
-            print("* " * 16)
-            print("\t1. Create a user")
-            print("\t2. Update a user")
-            print("\t3. Delete a user")
-            print("\t4. Create/Update a database")
-            print("\t5. Remove all the database's table")
+            print("Hello, God. What will it be today?")
+            print("\tdb_update. Create/Update a database")
+            print("\tdb_removetables. Remove all the database's table")
+            print("\n\t1. Create a user (management team)")
+            print("\t2. Update a user (management team)")
+            print("\t3. Deactivate a user (management team)")
+            print("\t4. Create a client (sales team)")
+            print(
+                "\t5. (unavailable for admin) Update a client (salesman in charge of the client)"
+            )
+            print("\t6. Display all clients (all the teams)")
+            print("\t7. Create a contract (management team)")
+            print(
+                "\t8. (unavailable for admin) Update a contract (management + salesman in charge of the client)"
+            )
+            print("\t9. Display all the contracts (all the teams)")
+            print("\t10. Display contracts that haven't been signed yet (sales team)")
+            print("\t11. Display contracts that haven't been fully paid (sales team)")
+            print("\t12. Create an event (salesman in charge of the client)")
+            print("\t13. Display events without support staff (management team)")
+            print("\t14. Update an event to add support staff (management team)")
+            print("\t15. Update an event (support member in charge of it)")
+            print("\t16. Display events the support member is in charge of (support)")
+            print("\t17. Display all the events (all the teams)")
+            print("\n\tdisconnect. DISCONNECT and go back to authentication")
 
             menu_choice = input("Your choice: ")
-            if menu_choice in ["1", "2", "3", "4", "5"]:
+            if menu_choice in [
+                "1",
+                "2",
+                "3",
+                "4",
+                "6",
+                "7",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "db_update",
+                "db_removetables",
+                "disconnect",
+            ]:
                 return menu_choice
             else:
                 print("\n\tERROR: Please enter an existing menu.\n")
@@ -80,14 +120,14 @@ class AuthenticationView:
             "\n\tERROR: Either the user does not exist or the password is wrong. Please try again.\n"
         )
 
-    def user_team_management(self, username):
-        print(f"{username} is in the Management Team")
+    # def user_team_management(self, username):
+    #     print(f"{username} is in the Management Team")
 
-    def user_team_sales(self, username):
-        print(f"{username} is in the Sales Team")
+    # def user_team_sales(self, username):
+    #     print(f"{username} is in the Sales Team")
 
-    def user_team_support(self, username):
-        print(f"{username} is in the Support Team")
+    # def user_team_support(self, username):
+    #     print(f"{username} is in the Support Team")
 
     def crud_password_check_wrong(self):
         print("Wrong password, you are going to be disconnected.")

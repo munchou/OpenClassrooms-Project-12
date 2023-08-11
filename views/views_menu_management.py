@@ -5,7 +5,7 @@ class MenuManagementView:
             print("* " * 16)
             print("\t1. Create a user")
             print("\t2. Update a user")
-            print("\t3. Delete a user")
+            print("\t3. Deactivate a user")
             print("\t4. Create a contract")
             print("\t5. Update a contract")
             print("\t6. Display events without assigned support")

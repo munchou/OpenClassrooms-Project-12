@@ -155,21 +155,20 @@ class TestIntegrationUser:
         assert user_update.status == models.Users.StatusEnum.support
 
     def test_user_delete(self, session, username="TestUser_updated"):
-        user_exists_before_deletion = False
+        user = DALUser().get_user_by_username(session, username)
+        user_status_before_deletion = user.status
         self.test_check_password_input(session, username)
         user_id_input = DALUser().get_user_by_username(session, username).id
         user = CheckObjectExists().check_userID_exists_update_delete(
             session, user_id_input
         )
-        if user:
-            user_exists_before_deletion = True
         user = DALUser().get_user_by_id(session, user_id_input)
         confirm_deletion = "y"
         if confirm_deletion == "y":
             DALSession().session_delete_and_commit(session, user)
 
-        assert user_exists_before_deletion == True
-        assert DALUser().get_user_by_username(session, username) == None
+        assert user_status_before_deletion == models.Users.StatusEnum.support
+        assert user.status == models.Users.StatusEnum.deactivated
 
 
 class TestIntegrationClient:

@@ -1,5 +1,6 @@
 from models import models
 
+
 from controllers.data_access_layer import (
     DALUser,
     DALClient,
@@ -57,6 +58,18 @@ class CrudClientMessagesView:
         print(f"Client {client.full_name} was successfully created.")
 
     @staticmethod
+    def not_salesmans_in_charge():
+        print(
+            "You are not in charge of that client, please try again with another one."
+        )
+        # while True:
+        #     print("\n\tERROR: The contract your referred to has NOT been signed yet.")
+        #     press_enter = input("\tPress ENTER to go back to the authentication menu. ")
+        #     if press_enter.strip() == "":
+        #         break
+        #     continue
+
+    @staticmethod
     def update_successful():
         print("The client was updated successfully.")
 
@@ -96,6 +109,12 @@ class CrudContractMessagesView:
     def salesmanID_not_exist():
         print("\n\tERROR: That ID does not match any salesman. Please try again.")
 
+    @staticmethod
+    def salesmanID_bad_id():
+        print(
+            "\n\tERROR: You must enter the ID of the salesman in charge of the client. Please try again."
+        )
+
     def contract_confirmation(
         self, client_id, salesman, total_amount, amount_due, signed
     ):
@@ -111,7 +130,7 @@ class CrudContractMessagesView:
 
     @staticmethod
     def creation_successful():
-        print(f"The contract was successfully created.")
+        print("The contract was successfully created.")
 
     def contract_display_all(self, session, contracts):
         for contract in contracts:
@@ -310,3 +329,11 @@ class CrudGeneralMessagesView:
             elif confirm_input != "n":
                 continue
             return False
+
+    @staticmethod
+    def press_enter_to_menu():
+        while True:
+            press_enter = input("\tPress ENTER to go back to your menu. ")
+            if press_enter.strip() == "":
+                break
+            continue

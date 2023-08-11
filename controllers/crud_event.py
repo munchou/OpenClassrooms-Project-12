@@ -1,5 +1,5 @@
 from views.views_crud_inputs import CrudInputsView
-from views.views_crud_messages import CrudContractMessagesView, CrudEventMessagesView
+from views.views_crud_messages import CrudClientMessagesView, CrudEventMessagesView
 
 from controllers.utils import Utils
 from controllers.data_access_layer import (
@@ -15,9 +15,11 @@ from models import models
 
 class CrudEvent:
     def event_create(self, session, username):
-        Utils().check_password_input(session, username)
+        Utils().user_status_request_pwd(session, username)
+        Utils().clear_screen()
         CrudEventMessagesView().creation_title()
 
+        salesman = DALUser().get_user_by_username(session, username)
         while True:
             contract_id_input = CrudInputsView().update_contract_id(session)
             contract = DALContract().get_contract_by_id(session, contract_id_input)
@@ -29,6 +31,9 @@ class CrudEvent:
 
                 main()
 
+            if contract.linked_salesman != salesman.id:
+                CrudClientMessagesView().not_salesmans_in_charge()
+                continue
             client_name_input = CrudInputsView().event_client_name(
                 session, contract_id_input
             )
@@ -72,9 +77,11 @@ class CrudEvent:
 
         DALSession().session_add_and_commit(session, event)
         CrudEventMessagesView().creation_successful()
+        Utils().back_to_menu(session, username)
 
     def event_update_add_support(self, session, username):
-        Utils().check_password_input(session, username)
+        Utils().user_status_request_pwd(session, username)
+        Utils().clear_screen()
         while True:
             event_id_input = CrudInputsView().update_event_id(session)
             event_update = CheckObjectExists().check_eventID_exists(
@@ -95,9 +102,11 @@ class CrudEvent:
 
         DALSession().session_commit(session)
         CrudEventMessagesView().support_update_successful()
+        Utils().back_to_menu(session, username)
 
     def event_update(self, session, username):
-        Utils().check_password_input(session, username)
+        Utils().user_status_request_pwd(session, username)
+        Utils().clear_screen()
         while True:
             event_id_input = CrudInputsView().update_event_id(session)
             event_update = CheckObjectExists().check_eventID_exists(
@@ -130,6 +139,7 @@ class CrudEvent:
 
         DALSession().session_commit(session)
         CrudEventMessagesView().update_successful()
+        Utils().back_to_menu(session, username)
 
     def event_update_fieldandvalue(self, event_id, session):
         field_to_update = CrudInputsView().what_to_update_event()
@@ -151,15 +161,18 @@ class CrudEvent:
 
         return field_to_update, value_to_update
 
-    def event_display_no_support(self, session):
+    def event_display_no_support(self, session, username):
         events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_no_support(events)
+        Utils().back_to_menu(session, username)
 
     def event_display_for_supportincharge(self, session, user):
         user = DALUser().get_user_by_username(session, user)
         events = DALEvent().get_events_by_supportid(session, user)
         CrudEventMessagesView().event_display_for_supportincharge(session, events)
+        Utils().back_to_menu(session, user)
 
-    def event_display_all(self, session):
+    def event_display_all(self, session, username):
         events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_all(session, events)
+        Utils().back_to_menu(session, username)

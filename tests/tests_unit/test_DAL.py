@@ -20,14 +20,14 @@ class TestDALUser:
         users = session.query(models.Users)
         for user in users:
             len += 1
-        assert len == 3
+        assert len == 4
 
     def test_get_all_users_usernames(self, session):
         users_list = []
         users = session.query(models.Users.username).all()
         for user in users:
             users_list.append(user[0])
-        assert len(users_list) == 3
+        assert len(users_list) == 4
         assert "User1" in users_list
         assert "User2" in users_list
         assert "User3" in users_list
@@ -42,7 +42,7 @@ class TestDALUser:
         len = 0
         for email in users_email:
             len += 1
-        assert len == 3
+        assert len == 4
 
     def test_get_user_saltychain(self, session):
         chains = (

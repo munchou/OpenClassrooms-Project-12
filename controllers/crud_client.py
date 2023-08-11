@@ -10,7 +10,8 @@ from models import models
 
 class CrudClient:
     def client_create(self, session, connected_user):
-        Utils().check_password_input(session, connected_user)
+        Utils().user_status_request_pwd(session, connected_user)
+        Utils().clear_screen()
         CrudClientMessagesView().creation_title()
         current_user = DALUser().get_current_user(session, connected_user)
 
@@ -47,15 +48,22 @@ class CrudClient:
 
         DALSession().session_add_and_commit(session, client)
         CrudClientMessagesView().creation_successful(client)
+        Utils().back_to_menu(session, connected_user)
 
     def client_update(self, session, username):
-        Utils().check_password_input(session, username)
+        Utils().user_status_request_pwd(session, username)
+        Utils().clear_screen()
+        salesman = DALUser().get_user_by_username(session, username)
+        # salesman_in_charge = False
         while True:
             client_id_input = CrudInputsView().contract_clientid_input(session)
             client_update = CheckObjectExists().check_clientID_exists(
                 session, client_id_input
             )
             if client_update in DALClient().get_all_clients(session):
+                if client_update.salesman_in_charge != salesman.id:
+                    CrudClientMessagesView().not_salesmans_in_charge()
+                    continue
                 confirm_choice = CrudInputsView().confirm_client_update_choice(
                     client_update
                 )
@@ -63,8 +71,10 @@ class CrudClient:
                     break
                 continue
             continue
+        # if salesman_in_charge == False:
+        #     wrong_client = CrudClientMessagesView().not_salesmans_in_charge()
 
-        field, value = self.client_update_fieldandvalue(session)
+        field, value = self.client_update_fieldandvalue(session, client_id_input)
         if field == "1":
             client_update.full_name = value
         if field == "2":
@@ -75,12 +85,15 @@ class CrudClient:
             client_update.company_name = value
         if field == "5":
             client_update.last_contacted = value
+        if field == "salesman":
+            client_update.salesman_in_charge = value
 
         DALSession().session_commit(session)
 
         CrudClientMessagesView().update_successful()
+        Utils().back_to_menu(session, username)
 
-    def client_update_fieldandvalue(self, session):
+    def client_update_fieldandvalue(self, session, client_id):
         field_to_update = CrudInputsView().what_to_update_client()
 
         if field_to_update == "1":
@@ -93,9 +106,15 @@ class CrudClient:
             value_to_update = CrudInputsView().company_name_input()
         if field_to_update == "5":
             value_to_update = CrudInputsView().last_contacted_input()
+        if field_to_update == "salesman":
+            value_to_update = CrudInputsView().client_update_salesmanid_input(
+                session, client_id
+            )
 
         return field_to_update, value_to_update
 
-    def client_display_all(self, session):
+    def client_display_all(self, session, username):
+        Utils().clear_screen()
         clients = DALClient().get_all_clients(session)
         CrudClientMessagesView().client_display_all(session, clients)
+        Utils().back_to_menu(session, username)

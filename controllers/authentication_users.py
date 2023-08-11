@@ -12,7 +12,7 @@ class UserAuthentication:
     params = config()
 
     def user_authentication(self):
-        Utils.clear_screen()
+        Utils().clear_screen()
         while True:
             username, password = AuthenticationView().input_user(
                 self.params["database"]
@@ -78,13 +78,10 @@ class UserAuthentication:
         user = DALUser().get_user_by_username(session, username)
 
         if user.status == models.Users.StatusEnum.management:
-            AuthenticationView().user_team_management(username)
             return 1
         if user.status == models.Users.StatusEnum.sales:
-            print(f"{username} is in the Sales Team")
             return 2
         if user.status == models.Users.StatusEnum.support:
-            print(f"{username} is in the Support Team")
             return 3
         else:
             return 0

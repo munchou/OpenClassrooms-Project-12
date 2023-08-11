@@ -64,7 +64,7 @@ class LoadCreateDBView:
                         or character.isdigit()
                         or character in allowed_characters
                     ):  # in allowed_characters:
-                        print(f"Chara {character} OK")
+                        # print(f"Chara {character} OK")
                         continue
                     else:
                         print(

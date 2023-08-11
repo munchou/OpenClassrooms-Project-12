@@ -1,5 +1,7 @@
 from models import models
 
+from sqlalchemy import exc
+
 
 class DALSession:
     def session_commit(self, session):
@@ -10,8 +12,23 @@ class DALSession:
         self.session_commit(session)
 
     def session_delete_and_commit(self, session, object):
-        session.delete(object)
+        """Instead of deleting it, the user is actually deactivated
+        by modifying its status. This prevents the program from
+        crashing because of associated Foreign Keys. The user could
+        then be reactivated if needed."""
+        object.status = "deactivated"
         self.session_commit(session)
+        # try:
+        #     session.delete(object)
+        #     try:
+        #         self.session_commit(session)
+        #     except Exception:
+        #         pass
+        # except Exception:
+        #     pass
+        #     print(
+        #         "That user is linked to other entities (clients/contracts/events) and cannot be removed."
+        #     )
 
     def session_close(self, session):
         session.close()
@@ -78,6 +95,9 @@ class DALContract:
 
     def get_contract_by_id(self, session, contract_id):
         return session.query(models.Contract).filter_by(id=contract_id).first()
+
+    def get_contracts_from_a_client(self, session, client_id):
+        return session.query(models.Contract).filter_by(client=client_id).all()
 
     def get_contractid_of_event(self, session, event):
         return session.query(models.Contract).filter_by(id=event.contract_id).first()

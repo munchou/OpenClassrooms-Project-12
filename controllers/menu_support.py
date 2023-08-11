@@ -16,7 +16,7 @@ class MenuSupport:
         load/creation of the DB.
         If the INI file already exists, skip its creation
         and directly goes to the next step."""
-        Utils.clear_screen()
+        Utils().clear_screen()
         input_choice = MenuSupportView().menu_support(username)
 
         if input_choice == "1":
@@ -26,13 +26,13 @@ class MenuSupport:
             CrudEvent().event_display_for_supportincharge(self.session, username)
 
         if input_choice == "3":
-            CrudClient().client_display_all(self.session)
+            CrudClient().client_display_all(self.session, username)
 
         if input_choice == "4":
-            CrudContract().contract_display_all(self.session)
+            CrudContract().contract_display_all(self.session, username)
 
         if input_choice == "5":
-            CrudEvent().event_display_all(self.session)
+            CrudEvent().event_display_all(self.session, username)
 
         if input_choice == "disconnect":
             Utils().disconnect_and_back_to_authentication(self.session)

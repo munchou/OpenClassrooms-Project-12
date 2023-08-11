@@ -237,6 +237,33 @@ class CrudInputsView:
                 continue
             return False
 
+    def client_update_salesmanid_input(self, session, client_id):
+        """Change the salesman in charge of the client.
+        When done so, update all the related contracts so that
+        the salesman linked to them is the new salesman in
+        charge of the client."""
+        client = DALClient().get_client_by_id(session, client_id)
+        client_contracts = DALContract().get_contracts_from_a_client(session, client_id)
+        print(f"client_contracts : {client_contracts}")
+
+        print(f"Current Salesman ID in charge: {client.salesman_in_charge}")
+        while True:
+            salesman_id = input("\tID of the new Salesman in charge of that contract: ")
+            if salesman_id.isdigit():
+                if not CheckObjectExists().check_salesmanID_exists(
+                    session, salesman_id
+                ):
+                    CrudContractMessagesView().salesmanID_not_exist()
+                    continue
+                # if salesman_id != str(client.salesman_in_charge):
+                #     CrudContractMessagesView().salesmanID_bad_id()
+                #     continue
+                for contract in client_contracts:
+                    contract.linked_salesman = salesman_id
+                    session.commit()
+                return salesman_id
+            print("\n\tERROR: Only digits are allowed.")
+
     def update_user_id_input(self):
         while True:
             user_id = input("Please enter the ID of the user you wish to update: ")
@@ -312,9 +339,9 @@ class CrudInputsView:
             print("\t3: Phone number")
             print("\t4: Company's name")
             print("\t5: Last contact date")
-            # print("\tsalesman: Salesman in charge")
+            print("\tsalesman: Salesman in charge")
             field_to_update = input("Choice: ")
-            if field_to_update not in ["1", "2", "3", "4", "5"]:
+            if field_to_update not in ["1", "2", "3", "4", "5", "salesman"]:
                 CrudGeneralMessagesView().wrong_input()
                 continue
             return field_to_update
@@ -339,18 +366,6 @@ class CrudInputsView:
                     CrudContractMessagesView().clientID_not_exist()
                     continue
                 return client_id
-            print("\n\tERROR: Only digits are allowed.")
-
-    def contract_salesmanid_input(self, session):
-        while True:
-            salesman_id = input("\tID of the Salesman in charge of that contract: ")
-            if salesman_id.isdigit():
-                if not CheckObjectExists().check_salesmanID_exists(
-                    session, salesman_id
-                ):
-                    CrudContractMessagesView().salesmanID_not_exist()
-                    continue
-                return salesman_id
             print("\n\tERROR: Only digits are allowed.")
 
     def contract_total_amount_input(self):
@@ -382,6 +397,23 @@ class CrudInputsView:
                 CrudGeneralMessagesView().wrong_input()
                 continue
 
+    def contract_linked_salesman(self, session, contract):
+        client = DALClient().get_client_by_id(session, contract.client)
+        print(f"client.salesman_in_charge: {client.salesman_in_charge}")
+        while True:
+            salesman_id = input("\tID of the Salesman in charge of that contract: ")
+            if salesman_id.isdigit():
+                if not CheckObjectExists().check_salesmanID_exists(
+                    session, salesman_id
+                ):
+                    CrudContractMessagesView().salesmanID_not_exist()
+                    continue
+                if salesman_id != str(client.salesman_in_charge):
+                    CrudContractMessagesView().salesmanID_bad_id()
+                    continue
+                return salesman_id
+            print("\n\tERROR: Only digits are allowed.")
+
     def confirm_contract_update_choice(self, session, contract_update):
         contract_client = DALClient().get_client_of_contract(session, contract_update)
         while True:
@@ -401,8 +433,9 @@ class CrudInputsView:
             print("\t1: Contract's total price")
             print("\t2: Contract's due amount")
             print("\t3: Contract's signature")
+            print("\t4: Salesman in charge")
             field_to_update = input("Choice: ")
-            if field_to_update not in ["1", "2", "3"]:
+            if field_to_update not in ["1", "2", "3", "4"]:
                 CrudGeneralMessagesView().wrong_input()
                 continue
             return field_to_update
