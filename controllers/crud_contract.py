@@ -96,28 +96,27 @@ class CrudContract:
             value_to_update = CrudInputsView().contract_due_amount_input()
         if field_to_update == "3":
             value_to_update = CrudInputsView().contract_signed()
-        if field_to_update == "4":
-            value_to_update = CrudInputsView().contract_linked_salesman(
-                session, contract
-            )
+        # if field_to_update == "4":
+        #     value_to_update = CrudInputsView().contract_linked_salesman(
+        #         session, contract
+        #     )
 
         return field_to_update, value_to_update
 
     def contract_display_all(self, session, username):
+        Utils().clear_screen()
         contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_all(session, contracts)
         Utils().back_to_menu(session, username)
 
     def contract_display_not_signed(self, session, username):
+        Utils().clear_screen()
         contracts = DALContract().get_all_contracts(session)
-        for contract in contracts:
-            if not contract.signed:
-                CrudContractMessagesView().contract_display_not_signed(
-                    session, contracts
-                )
+        CrudContractMessagesView().contract_display_not_signed(session, contracts)
         Utils().back_to_menu(session, username)
 
     def contract_display_not_paid(self, session, username):
+        Utils().clear_screen()
         contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_not_paid(session, contracts)
         Utils().back_to_menu(session, username)

@@ -53,17 +53,21 @@ class CrudClient:
     def client_update(self, session, username):
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
+        is_salesman = False
         salesman = DALUser().get_user_by_username(session, username)
-        # salesman_in_charge = False
+        if salesman != None:
+            is_salesman = True
+
         while True:
             client_id_input = CrudInputsView().contract_clientid_input(session)
             client_update = CheckObjectExists().check_clientID_exists(
                 session, client_id_input
             )
             if client_update in DALClient().get_all_clients(session):
-                if client_update.salesman_in_charge != salesman.id:
-                    CrudClientMessagesView().not_salesmans_in_charge()
-                    continue
+                if is_salesman == True:
+                    if client_update.salesman_in_charge != salesman.id:
+                        CrudClientMessagesView().not_salesmans_in_charge()
+                        continue
                 confirm_choice = CrudInputsView().confirm_client_update_choice(
                     client_update
                 )
@@ -71,8 +75,6 @@ class CrudClient:
                     break
                 continue
             continue
-        # if salesman_in_charge == False:
-        #     wrong_client = CrudClientMessagesView().not_salesmans_in_charge()
 
         field, value = self.client_update_fieldandvalue(session, client_id_input)
         if field == "1":

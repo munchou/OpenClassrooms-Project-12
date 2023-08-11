@@ -25,7 +25,6 @@ class MenuSalesView:
                 "7",
                 "8",
                 "9",
-                "10",
                 "disconnect",
             ]:
                 return menu_choice

@@ -36,8 +36,8 @@ class MenuAdmin:
         if admin_menu_choice == "4":
             CrudClient().client_create(self.session, username)
 
-        # if admin_menu_choice == "5":
-        #     CrudClient().client_update(self.session, username)
+        if admin_menu_choice == "5":
+            CrudClient().client_update(self.session, username)
 
         if admin_menu_choice == "6":
             CrudClient().client_display_all(self.session, username)

@@ -23,6 +23,8 @@ def main():
         MenuSales().menu_sales(username)
     if auth_menu == 3:
         MenuSupport().menu_support(username)
+    if auth_menu == "exit":
+        exit()
 
 
 if __name__ == "__main__":

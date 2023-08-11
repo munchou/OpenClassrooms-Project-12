@@ -244,7 +244,6 @@ class CrudInputsView:
         charge of the client."""
         client = DALClient().get_client_by_id(session, client_id)
         client_contracts = DALContract().get_contracts_from_a_client(session, client_id)
-        print(f"client_contracts : {client_contracts}")
 
         print(f"Current Salesman ID in charge: {client.salesman_in_charge}")
         while True:
@@ -433,9 +432,9 @@ class CrudInputsView:
             print("\t1: Contract's total price")
             print("\t2: Contract's due amount")
             print("\t3: Contract's signature")
-            print("\t4: Salesman in charge")
+            # print("\t4: Salesman in charge")
             field_to_update = input("Choice: ")
-            if field_to_update not in ["1", "2", "3", "4"]:
+            if field_to_update not in ["1", "2", "3"]:
                 CrudGeneralMessagesView().wrong_input()
                 continue
             return field_to_update

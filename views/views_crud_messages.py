@@ -62,18 +62,13 @@ class CrudClientMessagesView:
         print(
             "You are not in charge of that client, please try again with another one."
         )
-        # while True:
-        #     print("\n\tERROR: The contract your referred to has NOT been signed yet.")
-        #     press_enter = input("\tPress ENTER to go back to the authentication menu. ")
-        #     if press_enter.strip() == "":
-        #         break
-        #     continue
 
     @staticmethod
     def update_successful():
         print("The client was updated successfully.")
 
     def client_display_all(self, session, clients):
+        print("\tLIST OF ALL THE CLIENTS:\n")
         for client in clients:
             print(f"Client ID: {client.id} | {client.full_name}")
             print(f"\temail: {client.email}")
@@ -133,9 +128,10 @@ class CrudContractMessagesView:
         print("The contract was successfully created.")
 
     def contract_display_all(self, session, contracts):
+        print("\tLIST OF ALL THE CONTRACTS:\n")
         for contract in contracts:
             client = DALClient().get_client_by_id(session, contract.client)
-            print(f"\tContract ID: {contract.id} | {client.full_name}")
+            print(f"Contract ID: {contract.id} | {client.full_name}")
             salesman_in_charge = DALUser().get_user_by_id(
                 session, contract.linked_salesman
             )
@@ -238,6 +234,10 @@ class CrudEventMessagesView:
         print("\n\tERROR: That ID does not match any support member. Please try again.")
 
     @staticmethod
+    def not_support_in_charge():
+        print("You are not in charge of that event, please try again with another one.")
+
+    @staticmethod
     def creation_successful():
         print(f"The event was successfully created.")
 
@@ -254,27 +254,30 @@ class CrudEventMessagesView:
         print("\n\tERROR: That ID does not match any events. Please try again.")
 
     def event_display_all(self, session, events):
-        print("Events without an assigned Support member:")
+        print("\tLIST OF ALL THE EVENTS:\n")
         for event in events:
-            print(f"\tEvent ID: {event.id}")
+            print(f"Event ID: {event.id}")
             print(f"\tRelated to contract ID: {event.contract_id}")
             print(f"\tClient: {event.client_name}")
             print(f"\tClient's contact information: {event.client_contact}")
             print(f"\tStart date: {event.start_date}")
             print(f"\tEnd date: {event.end_date}")
             support_in_charge = DALUser().get_user_by_id(session, event.support_contact)
-            print(
-                f"\tSupport member in charge: {support_in_charge.full_name} (ID: {support_in_charge.id})"
-            )
+            if support_in_charge != None:
+                print(
+                    f"\tSupport member in charge: {support_in_charge.full_name} (ID: {support_in_charge.id})"
+                )
+            else:
+                print("\tSupport member in charge: not assigned yet")
             print(f"\tLocation: {event.location}")
             print(f"\tAttendees: {event.attendees}")
             print(f"\tNotes: {event.notes}\n")
 
     def event_display_no_support(self, events):
-        print("Events without an assigned Support member:")
+        print("\tEVENT WITHOUT AN ASSIGNED SUPPORT MEMBER:\n")
         for event in events:
             if event.support_contact is None:
-                print(f"\tEvent ID: {event.id}")
+                print(f"Event ID: {event.id}")
                 print(f"\tRelated to contract ID: {event.contract_id}")
                 print(f"\tClient: {event.client_name}")
                 print(f"\tClient's contact information: {event.client_contact}")
@@ -288,9 +291,9 @@ class CrudEventMessagesView:
         if len(events) == 0:
             return print("You do not have any assigned events.")
 
-        print("Events your are assigned to:")
+        print("\tEVENTS YOU ARE ASSIGNED TO:\n")
         for event in events:
-            print(f"\tEvent ID: {event.id}")
+            print(f"Event ID: {event.id}")
             print(f"\tRelated to contract ID: {event.contract_id}")
             print(f"\tClient: {event.client_name}")
             print(f"\tClient's contact information: {event.client_contact}")

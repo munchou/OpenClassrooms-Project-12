@@ -53,7 +53,10 @@ class AuthenticationView:
         print(f"* AUTHENTICATION to database '{current_database}'")
         print("*\n")
 
+        print("(type 'exit' as the username to exit the program)\n")
         username_input = input("\tusername: ")
+        if username_input == "exit":
+            return username_input, ""
         password_input = getpass("\tpassword: ")
         return username_input, password_input
 
@@ -69,9 +72,7 @@ class AuthenticationView:
             print("\t2. Update a user (management team)")
             print("\t3. Deactivate a user (management team)")
             print("\t4. Create a client (sales team)")
-            print(
-                "\t5. (unavailable for admin) Update a client (salesman in charge of the client)"
-            )
+            print("\t5. Update a client (salesman in charge of the client)")
             print("\t6. Display all clients (all the teams)")
             print("\t7. Create a contract (management team)")
             print(
@@ -94,6 +95,7 @@ class AuthenticationView:
                 "2",
                 "3",
                 "4",
+                "5",
                 "6",
                 "7",
                 "9",

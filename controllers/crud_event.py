@@ -107,12 +107,16 @@ class CrudEvent:
     def event_update(self, session, username):
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
+        current_support = DALUser().get_user_by_username(session, username)
         while True:
             event_id_input = CrudInputsView().update_event_id(session)
             event_update = CheckObjectExists().check_eventID_exists(
                 session, event_id_input
             )
             if event_update in DALEvent().get_all_events(session):
+                if event_update.support_contact != current_support.id:
+                    CrudEventMessagesView().not_support_in_charge()
+                    continue
                 confirm_choice = CrudInputsView().confirm_event_update_choice(
                     session, event_update
                 )
@@ -162,17 +166,20 @@ class CrudEvent:
         return field_to_update, value_to_update
 
     def event_display_no_support(self, session, username):
+        Utils().clear_screen()
         events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_no_support(events)
         Utils().back_to_menu(session, username)
 
-    def event_display_for_supportincharge(self, session, user):
-        user = DALUser().get_user_by_username(session, user)
+    def event_display_for_supportincharge(self, session, username):
+        Utils().clear_screen()
+        user = DALUser().get_user_by_username(session, username)
         events = DALEvent().get_events_by_supportid(session, user)
         CrudEventMessagesView().event_display_for_supportincharge(session, events)
-        Utils().back_to_menu(session, user)
+        Utils().back_to_menu(session, username)
 
     def event_display_all(self, session, username):
+        Utils().clear_screen()
         events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_all(session, events)
         Utils().back_to_menu(session, username)

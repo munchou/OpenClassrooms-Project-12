@@ -21,6 +21,10 @@ class UserAuthentication:
             if username == self.params["user"] and password == self.params["password"]:
                 return "zupayuzaaa", username
 
+            # To  exit the program
+            if username == "exit":
+                return username, ""
+
             # If not superuser, then normal connection:
             session = Utils().session_init()
 
