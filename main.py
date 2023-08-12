@@ -1,5 +1,16 @@
 import os.path
 from controllers.first_connection import FirstLaunch
+import sentry_sdk
+
+
+sentry_sdk.init(
+    dsn="https://c0eb8866f5695f4f48d3856d010b9129@o4505691007680512.ingest.sentry.io/4505691010367488",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
+)
+
 
 path = "database.ini"
 check_file = os.path.isfile(path)
