@@ -297,7 +297,7 @@ class CrudInputsView:
 
     def remove_user_id_input(self):
         while True:
-            user_id = input("Please enter the ID of the user you wish to remove: ")
+            user_id = input("Please enter the ID of the user you wish to deactivate: ")
             if user_id.isdigit():
                 return user_id
             print("Bad input, try again")
@@ -306,7 +306,7 @@ class CrudInputsView:
     def remove_user_confirm_deletion(self, user):
         while True:
             confirm_deletion = input(
-                f"Do you confirm the deletion of {user.username} (ID: {user.id}) (y/n)? "
+                f"Do you confirm the deactivation of {user.username} (ID: {user.id}) (y/n)? "
             ).casefold()
             if confirm_deletion == "y":
                 return "y"
@@ -314,11 +314,6 @@ class CrudInputsView:
                 return "n"
             print("Input error, please try again.")
             continue
-
-    # def update_client_id_input(self):
-    #     user_id = input("Please enter the ID of the client you wish to update: ")
-    #     # if user_id.isdigit():
-    #     return user_id
 
     def confirm_client_update_choice(self, client_update):
         while True:
@@ -366,6 +361,19 @@ class CrudInputsView:
                     continue
                 return client_id
             print("\n\tERROR: Only digits are allowed.")
+
+    # def contract_salesmanid_input(self, session, client_id):
+    #     current_client = DALClient().get_client_by_id(session, client_id).first()
+    #     while True:
+    #         salesman_id = input("\tID of the Salesman in charge of that contract: ")
+    #         if salesman_id.isdigit():
+    #             if not CheckObjectExists().check_salesmanID_exists(
+    #                 session, salesman_id
+    #             ):
+    #                 CrudContractMessagesView().salesmanID_not_exist()
+    #                 continue
+    #             return salesman_id
+    #         print("\n\tERROR: Only digits are allowed.")
 
     def contract_total_amount_input(self):
         while True:
@@ -426,17 +434,23 @@ class CrudInputsView:
                 continue
             return False
 
-    def what_to_update_contract(self):
+    def what_to_update_contract(self, contract):
         while True:
             print("What would you like to update?")
             print("\t1: Contract's total price")
             print("\t2: Contract's due amount")
-            print("\t3: Contract's signature")
-            # print("\t4: Salesman in charge")
-            field_to_update = input("Choice: ")
-            if field_to_update not in ["1", "2", "3"]:
-                CrudGeneralMessagesView().wrong_input()
-                continue
+            if not contract.signed:
+                print("\t3: Contract's signature")
+                field_to_update = input("Choice: ")
+                if field_to_update not in ["1", "2", "3"]:
+                    CrudGeneralMessagesView().wrong_input()
+                    continue
+            else:
+                print("\tThe contract has already been signed")
+                field_to_update = input("Choice: ")
+                if field_to_update not in ["1", "2"]:
+                    CrudGeneralMessagesView().wrong_input()
+                    continue
             return field_to_update
 
     def event_client_name(self, session, contract_id):
@@ -508,6 +522,7 @@ class CrudInputsView:
                 print(f"Error in the date {custom_date}, please try again.")
                 continue
 
+            startdate = str(startdate)
             custom_date = str(custom_date)
 
             if custom_date < startdate:
@@ -621,6 +636,7 @@ class CrudInputsView:
                 print(f"Error in the date {custom_date}, please try again.")
                 continue
 
+            startdate = str(startdate)
             custom_date = str(custom_date)
 
             if custom_date < startdate:

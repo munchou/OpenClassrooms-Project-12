@@ -7,7 +7,7 @@ from controllers.check_object_exists import CheckObjectExists
 
 from models import models
 
-import sqlalchemy
+import sentry_sdk
 
 
 class CrudUser:
@@ -74,12 +74,16 @@ class CrudUser:
 
         DALSession().session_add_and_commit(session, user)
         CrudUserMessagesView().creation_successful(user)
-        # self.back_to_menu(session, username)
+        sentry_sdk.capture_message(
+            f"A new user was created ({user.username}, ID: {user.id})"
+        )
         Utils().back_to_menu(session, username)
 
     def user_update(self, session, username):
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
+        current_user = DALUser().get_user_by_username(session, username)
+        status_updated = False
         while True:
             user_id_input = CrudInputsView().update_user_id_input()
             user_update = CheckObjectExists().check_userID_exists_update_delete(
@@ -105,13 +109,19 @@ class CrudUser:
             user_update.phone_number = value
         if field == "5":
             user_update.status = value
+            if current_user == user_update:
+                status_updated = True
         if field == "password":
             user_update.password = value
             user_update.saltychain = chain
 
         DALSession().session_commit(session)
         CrudUserMessagesView().update_successful()
-        # self.back_to_menu(username)
+        sentry_sdk.capture_message(
+            f"A user was updated ({user_update.username}, ID: {user_update.id})"
+        )
+        if status_updated:
+            Utils().disconnect_and_back_to_authentication(session)
         Utils().back_to_menu(session, username)
 
     def user_update_fieldandvalue(self, session):

@@ -6,6 +6,7 @@ from controllers.data_access_layer import DALSession, DALUser, DALClient, DALCon
 from controllers.check_object_exists import CheckObjectExists
 
 from models import models
+import sentry_sdk
 
 
 class CrudContract:
@@ -16,9 +17,11 @@ class CrudContract:
 
         while True:
             client_id_input = CrudInputsView().contract_clientid_input(session)
-            salesman_input = CrudInputsView().contract_salesmanid_input(
-                session, client_id_input
-            )
+            client = DALClient().get_client_by_id(session, client_id_input)
+            salesman_input = client.salesman_in_charge
+            # CrudInputsView().contract_salesmanid_input(
+            #     session, client_id_input
+            # )
             total_amount_input = CrudInputsView().contract_total_amount_input()
             amount_due_input = CrudInputsView().contract_due_amount_input()
             signed_input = CrudInputsView().contract_signed()
@@ -47,6 +50,10 @@ class CrudContract:
 
         DALSession().session_add_and_commit(session, contract)
         CrudContractMessagesView().creation_successful()
+        if signed_input is True:
+            sentry_sdk.capture_message(
+                f"A contract has been signed (ID: {contract.id})"
+            )
         Utils().back_to_menu(session, username)
 
     def contract_update(self, session, username):
@@ -55,11 +62,14 @@ class CrudContract:
         current_user = DALUser().get_user_by_username(session, username)
         # print(f"current_user status: {current_user.status}")
         while True:
+            already_signed = False
             contract_id_input = CrudInputsView().update_contract_id(session)
             contract_update = CheckObjectExists().check_contractID_exists(
                 session, contract_id_input
             )
             if contract_update in DALContract().get_all_contracts(session):
+                if contract_update.signed:
+                    already_signed = True
                 client = DALClient().get_client_by_id(session, contract_update.client)
                 if current_user.status != models.Users.StatusEnum.management:
                     if client.salesman_in_charge != current_user.id:
@@ -78,8 +88,12 @@ class CrudContract:
             contract_update.total_amount = value
         if field == "2":
             contract_update.amount_due = value
-        if field == "3":
+        if field == "3" and value != None:
             contract_update.signed = value
+            if already_signed is False and value is True:
+                sentry_sdk.capture_message(
+                    f"A contract has been signed (ID: {contract_update.id})"
+                )
         if field == "4":
             contract_update.linked_salesman = value
 
@@ -88,7 +102,7 @@ class CrudContract:
         Utils().back_to_menu(session, username)
 
     def contract_update_fieldandvalue(self, session, contract):
-        field_to_update = CrudInputsView().what_to_update_contract()
+        field_to_update = CrudInputsView().what_to_update_contract(contract)
 
         if field_to_update == "1":
             value_to_update = CrudInputsView().contract_total_amount_input()

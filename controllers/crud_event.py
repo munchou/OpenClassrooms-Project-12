@@ -25,7 +25,7 @@ class CrudEvent:
             contract = DALContract().get_contract_by_id(session, contract_id_input)
             if not contract.signed:
                 CrudEventMessagesView().contract_not_signed()
-                DALSession().session_close(session)
+                Utils().back_to_menu(session, username)
 
                 from main import main
 

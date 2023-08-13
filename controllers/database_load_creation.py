@@ -1,5 +1,4 @@
 from controllers.config import config, ini_update_database
-from controllers.menu_admin import MenuAdmin
 
 from sqlalchemy_utils import create_database
 
@@ -123,6 +122,8 @@ class DatabaseCreation:
         Base.metadata.create_all(bind=engine)
 
     def tables_delete(self, username):
+        from controllers.menu_admin import MenuAdmin
+
         params = config()
         current_database = params["database"]
 

@@ -87,6 +87,8 @@ class UserAuthentication:
             return 2
         if user.status == models.Users.StatusEnum.support:
             return 3
+        if user.status == models.Users.StatusEnum.deactivated:
+            return 4
         else:
             return 0
 

@@ -49,9 +49,15 @@ class AuthenticationView:
         # exit()
 
     def input_user(self, current_database):
-        print("*")
-        print(f"* AUTHENTICATION to database '{current_database}'")
-        print("*\n")
+        full_title = f"* AUTHENTICATION to database '{current_database}' *"
+        auth_len = len(full_title)
+        if auth_len % 2 == 0:
+            auth_len = int(auth_len / 2)
+        else:
+            auth_len = int(auth_len / 2) + 1
+        print("* " * auth_len)
+        print(full_title)
+        print("* " * auth_len)
 
         print("(type 'exit' as the username to exit the program)\n")
         username_input = input("\tusername: ")

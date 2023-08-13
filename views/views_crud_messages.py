@@ -34,7 +34,7 @@ class CrudUserMessagesView:
         print("The user was updated successfully.")
 
     def remove_user_sucess(self, user):
-        print(f"{user.username} (ID: {user.id}) was successfully deleted.")
+        print(f"{user.username} (ID: {user.id}) was successfully deactivated.")
 
 
 class CrudClientMessagesView:
@@ -127,6 +127,10 @@ class CrudContractMessagesView:
     def creation_successful():
         print("The contract was successfully created.")
 
+    @staticmethod
+    def contract_already_signed():
+        print("The contract has already been signed.")
+
     def contract_display_all(self, session, contracts):
         print("\tLIST OF ALL THE CONTRACTS:\n")
         for contract in contracts:
@@ -199,12 +203,7 @@ class CrudEventMessagesView:
 
     @staticmethod
     def contract_not_signed():
-        while True:
-            print("\n\tERROR: The contract your referred to has NOT been signed yet.")
-            press_enter = input("\tPress ENTER to go back to the authentication menu. ")
-            if press_enter.strip() == "":
-                break
-            continue
+        print("\n\tERROR: The contract you referred to has NOT been signed yet.")
 
     def event_confirmation(
         self,
@@ -274,7 +273,7 @@ class CrudEventMessagesView:
             print(f"\tNotes: {event.notes}\n")
 
     def event_display_no_support(self, events):
-        print("\tEVENT WITHOUT AN ASSIGNED SUPPORT MEMBER:\n")
+        print("\tEVENTS WITHOUT AN ASSIGNED SUPPORT MEMBER:\n")
         for event in events:
             if event.support_contact is None:
                 print(f"Event ID: {event.id}")
