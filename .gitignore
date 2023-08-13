@@ -4,5 +4,4 @@ _env
 _oldfiles
 *.ini
 *.bat
-*.txt
 .coverage
