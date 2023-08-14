@@ -48,19 +48,28 @@ Still in the command window where you activated your virtual environment, type:
 `python –m main`
 
 
-## Getting to the application
+## Getting to and using the application
 See the [DOCUMENTATION](documentation/P12%20-%20Documentation.pdf)
 
 
 ## Testing process
 - ### Unit and integration tests
-The test were run using pytest.
+The test were run using pytest (92 tests).
 You simply need to type `pytest` and let the magic do its deed (to get more details about the tests, you can type `pytest -v -s`).
 If the terminal displays any red, it's NOT normal!
 
 IMPORTANT: not EVERYTHING was tested, only the features and important functionalities. The program is based on the MVC architecture, so the VIEWS (inputs and prints) were, for the most part, NOT tested.
 The part of the program that controls the setup of the database was also NOT included (but obviously tested).
 Therefore, the overall coverage is about 60%, whereas the functionalities's coverage is actually above 85%.
+
+Integration tests:
+tests_integration\test_integration.py (98%) testing controllers/crud_user.py, crud_client.py, crud_contract.py, crud_event.py
+
+Unit tests:
+test_authentication_users.py (98%)
+check_object_exists.py (60%)
+data_access_layer (93%)
+
 
 
 - ### Unit and integration tests coverage
