@@ -42,14 +42,14 @@ or download the ZIP file and extract it in a chosen folder.
 
 
 ## Starting the program
-Absolutely everything goes through the program. Yes, EVE-RY-THING! Which means unlike most things you’ll find, you do not need to run ANY commands to create your database or connect to it. Some would say it’s strange or not even recommended, and I would disagree. The thing is: ONLY the superuser (the user that was created when PostgreSQL was installed) have the rights to do so. Any other user is NOT supposed to know the username, let alone the password to connect to the databases. So be it through psql or within my program, as long as you got the right IDs, you can do whatever you want.
+Absolutely everything goes through the program. Yes, EVE-RY-THING! Which means unlike most things you’ll find, you do not need to run ANY commands to create your database or connect to it. Some would say it’s strange or not even recommended, and I would disagree. The thing is: ONLY the superuser (the user that was created when PostgreSQL was installed) has the rights to do so. Any other user is NOT supposed to know the username, let alone the password to connect to the databases. So be it through psql or within my program, as long as you got the right IDs, you can do whatever you want.
 
 Still in the command window where you activated your virtual environment, type:
 `python –m main`
 
 
 ## Getting to the application
-See the documentation (link to the PDF file at the beginning of that README)
+See the [DOCUMENTATION](documentation/P12%20-%20Documentation.pdf)
 
 
 ## Testing process
