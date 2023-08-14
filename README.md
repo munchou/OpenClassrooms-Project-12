@@ -5,19 +5,24 @@
 _Tested with Windows 10 and Python 3.10.2_
 
 _IMPORTANT NOTE: the project's requirements have evolved after I started it. Although it is asked to build a back-end architecture based on command lines, I developed a whole terminal interface that allows the users to do whatever they want without having to have to type any annoying commands.
+
 In a nutshell, I did more than what was asked, which took way too much time._
 
 # Hao2do (Windows)
 
 The following steps are only to setup your machine and start the program.
+
 Before starting the latter, ready yourself a nice coffee, [DOWNLOAD THE DOCUMENTATION](documentation/P12%20-%20Documentation.pdf) and read it.
 
 
 ## Installing PostgreSQL
 Beware: the installation of PostgreSQL is mandatory. Please do so before trying to run the program.
+
 A recommended website with step-by-step instructions (also available for macOS and Linux):
 https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql/
+
 The official website: https://www.postgresql.org/
+
 Go to the Download section and choose the version that suits your OS.
 Important: if ou chose to use pgAdmin 4 (like I did) and your program seems to be stuck in a loop right after starting it, download and install a previous version. There seems to be serious issues with the latest versions (as of July 2023), I had to install v7.1 to get it to run.
 You can also choose another client rather than pgAdmin.
@@ -63,12 +68,12 @@ The part of the program that controls the setup of the database was also NOT inc
 Therefore, the overall coverage is about 60%, whereas the functionalities's coverage is actually above 85%.
 
 Integration tests:
-tests_integration\test_integration.py (98%) testing controllers/crud_user.py, crud_client.py, crud_contract.py, crud_event.py
+- tests_integration\test_integration.py (98%) testing controllers/crud_user.py, crud_client.py, crud_contract.py, crud_event.py
 
 Unit tests:
-test_authentication_users.py (98%)
-check_object_exists.py (60%)
-data_access_layer (93%)
+- test_authentication_users.py (98%)
+- check_object_exists.py (60%)
+- data_access_layer (93%)
 
 
 
