@@ -17,6 +17,8 @@ from sqlalchemy import create_engine, exc
 
 class DatabaseCreation:
     def session_init(self):
+        """Intialize the session or returns an error in
+        case of wrong input."""
         params = config()
         try:
             engine = create_engine(
@@ -29,25 +31,25 @@ class DatabaseCreation:
         Session = sessionmaker(bind=engine)
         return Session()
 
-    def special_authentication(self):
-        while True:
-            host_input = AuthenticationView().input_config_host()
-            port_input = AuthenticationView().input_config_port()
-            database_input = AuthenticationView().input_config_database()
-            user_input = AuthenticationView().input_config_user()
-            password_input = AuthenticationView().input_config_password()
+    # def special_authentication(self):
+    #     while True:
+    #         host_input = AuthenticationView().input_config_host()
+    #         port_input = AuthenticationView().input_config_port()
+    #         database_input = AuthenticationView().input_config_database()
+    #         user_input = AuthenticationView().input_config_user()
+    #         password_input = AuthenticationView().input_config_password()
 
-            try:
-                engine = create_engine(
-                    f"postgresql://{user_input}:{password_input}@{host_input}:{port_input}/{database_input}"
-                )
-                engine.connect()
-                break
-            except Exception:
-                AuthenticationView().authentication_error()
-                continue
+    #         try:
+    #             engine = create_engine(
+    #                 f"postgresql://{user_input}:{password_input}@{host_input}:{port_input}/{database_input}"
+    #             )
+    #             engine.connect()
+    #             break
+    #         except Exception:
+    #             AuthenticationView().authentication_error()
+    #             continue
 
-        self.create_load_database()
+    #     self.create_load_database()
 
     def create_load_database(self):
         """Connects to the default PostgreSQL or another database
@@ -101,7 +103,7 @@ class DatabaseCreation:
         conn.close()
 
     def check_tables_exist(self, engine):
-        """Create the needed tables if they are not in the database."""
+        """Create the needed tables if they are not in the current database."""
         # conn = engine.connect()
 
         insp = sqlalchemy.inspect(engine)
@@ -118,10 +120,12 @@ class DatabaseCreation:
             self.tables_creation(engine)
 
     def tables_creation(self, engine):
+        """Create the tables in the current database."""
         Base = models.Base
         Base.metadata.create_all(bind=engine)
 
     def tables_delete(self, username):
+        """Delete the tables from the current database."""
         from controllers.menu_admin import MenuAdmin
 
         params = config()

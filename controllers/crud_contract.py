@@ -11,6 +11,9 @@ import sentry_sdk
 
 class CrudContract:
     def contract_create(self, session, username):
+        """Create a contract after filling the required fields.
+        If needed, each input will be checked to ensure that
+        the entered information is valid and can be processed."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         CrudContractMessagesView().creation_title()
@@ -57,6 +60,7 @@ class CrudContract:
         Utils().back_to_menu(session, username)
 
     def contract_update(self, session, username):
+        """Update a contract's selected field."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         current_user = DALUser().get_user_by_username(session, username)
@@ -118,18 +122,21 @@ class CrudContract:
         return field_to_update, value_to_update
 
     def contract_display_all(self, session, username):
+        """Display all the contracts in the database."""
         Utils().clear_screen()
         contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_all(session, contracts)
         Utils().back_to_menu(session, username)
 
     def contract_display_not_signed(self, session, username):
+        """Display the contracts that have not been signed."""
         Utils().clear_screen()
         contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_not_signed(session, contracts)
         Utils().back_to_menu(session, username)
 
     def contract_display_not_paid(self, session, username):
+        """Display the contracts that have not been fully paid."""
         Utils().clear_screen()
         contracts = DALContract().get_all_contracts(session)
         CrudContractMessagesView().contract_display_not_paid(session, contracts)

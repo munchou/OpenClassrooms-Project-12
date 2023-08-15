@@ -11,12 +11,9 @@ class MenuManagement:
     session = Utils().session_init()
 
     def menu_management(self, username):
-        """Check if the INI (= configuration) file exists.
-        If not, create the INI file based on the user input
-        in the main folder of the program. Then goes to the
-        load/creation of the DB.
-        If the INI file already exists, skip its creation
-        and directly goes to the next step."""
+        """Management Team Menu: controller where the menu
+        is displayed, the input checked and the user redirected
+        according to the input."""
         Utils().clear_screen()
         input_choice = MenuManagementView().menu_management(username)
 

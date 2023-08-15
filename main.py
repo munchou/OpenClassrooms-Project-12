@@ -24,6 +24,9 @@ if not check_file:
 
 
 def main():
+    """Function that checks the status of the user
+    (admin, belonging to a specific team or deactivated)
+    and loads the menu accordingly."""
     from controllers.authentication_users import UserAuthentication
     from controllers.menu_management import MenuManagement
     from controllers.menu_sales import MenuSales

@@ -15,6 +15,9 @@ from models import models
 
 class CrudEvent:
     def event_create(self, session, username):
+        """Create an event after filling the required fields.
+        If needed, each input will be checked to ensure that
+        the entered information is valid and can be processed."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         CrudEventMessagesView().creation_title()
@@ -80,6 +83,7 @@ class CrudEvent:
         Utils().back_to_menu(session, username)
 
     def event_update_add_support(self, session, username):
+        """Update an event to assign/modify support."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         while True:
@@ -105,6 +109,7 @@ class CrudEvent:
         Utils().back_to_menu(session, username)
 
     def event_update(self, session, username):
+        """Update an event's selected field."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         current_support = DALUser().get_user_by_username(session, username)
@@ -166,12 +171,15 @@ class CrudEvent:
         return field_to_update, value_to_update
 
     def event_display_no_support(self, session, username):
+        """Display the events without assigned support."""
         Utils().clear_screen()
         events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_no_support(events)
         Utils().back_to_menu(session, username)
 
     def event_display_for_supportincharge(self, session, username):
+        """Display the events the logged in support member
+        is in charge of."""
         Utils().clear_screen()
         user = DALUser().get_user_by_username(session, username)
         events = DALEvent().get_events_by_supportid(session, user)
@@ -179,6 +187,7 @@ class CrudEvent:
         Utils().back_to_menu(session, username)
 
     def event_display_all(self, session, username):
+        """Display all the events in the database."""
         Utils().clear_screen()
         events = DALEvent().get_all_events(session)
         CrudEventMessagesView().event_display_all(session, events)

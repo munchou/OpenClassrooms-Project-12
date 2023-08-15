@@ -12,6 +12,8 @@ class UserAuthentication:
     params = config()
 
     def user_authentication(self):
+        """User authentication. The function checks the inputs,
+        if the user exists and returns the status and the username."""
         Utils().clear_screen()
         while True:
             username, password = AuthenticationView().input_user(
@@ -42,6 +44,8 @@ class UserAuthentication:
             return self.check_user_status(session, username), username
 
     def check_if_user_exists(self, session, username):
+        """Check if the user exists among the users present
+        in the database."""
         all_users_list = DALUser().get_all_users_usernames(session)
         existing_usernames = []
         for t in all_users_list:
@@ -51,6 +55,7 @@ class UserAuthentication:
             return 0
 
     def retrieve_salties(self, session, username):
+        """Get the user's salty chain chunks from the database."""
         user_saltychain = DALUser().get_user_saltychain(session, username)
 
         chains_list = str(user_saltychain[0][1:-1]).split(",")
@@ -58,6 +63,9 @@ class UserAuthentication:
         return chains_list
 
     def check_password(self, session, username, password):
+        """Check the password entered while trying to log in.
+        If it matches: proceed. If it doesn't: error and the user
+        must type in their IDs again."""
         chains_list = self.retrieve_salties(session, username)
         salty_first = chains_list[0]
         salty_second = chains_list[1]
@@ -79,6 +87,8 @@ class UserAuthentication:
             return 0
 
     def check_user_status(self, session, username):
+        """Check the user's status and return a value
+        used to display the menu accordingly."""
         user = DALUser().get_user_by_username(session, username)
 
         if user.status == models.Users.StatusEnum.management:
@@ -93,7 +103,7 @@ class UserAuthentication:
             return 0
 
     def password_encryption(self, password):
-        """Password salting and hashing. Good luck to hackers..."""
+        """Password salting and hashing."""
         numbers = [4, 5, 6, 7, 8]
         salty_first = secrets.token_hex(random.choice(numbers))
         salty_second = secrets.token_hex(random.choice(numbers))

@@ -1,5 +1,6 @@
 class MenuSupportView:
     def menu_support(self, username):
+        """Support Team Menu: display and inputs."""
         while True:
             print(f"SUPPORT MENU | WELCOME, {username}")
             print("* " * 16)

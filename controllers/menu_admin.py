@@ -12,6 +12,9 @@ class MenuAdmin:
     session = Utils().session_init()
 
     def menu_admin(self, username):
+        """Admin Menu: controller where the menu
+        is displayed, the input checked and the user redirected
+        according to the input."""
         admin_menu_choice = AuthenticationView().admin_menu()
 
         if admin_menu_choice == "db_update":

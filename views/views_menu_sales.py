@@ -1,5 +1,6 @@
 class MenuSalesView:
     def menu_sales(self, username):
+        """Sales Team Menu: display and inputs."""
         while True:
             print(f"SALES MENU | WELCOME, {username}")
             print("* " * 16)

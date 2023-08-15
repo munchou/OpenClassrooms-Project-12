@@ -1,5 +1,6 @@
 class MenuManagementView:
     def menu_management(self, username):
+        """Management Team Menu: display and inputs."""
         while True:
             print(f"MANAGEMENT MENU | WELCOME, {username}")
             print("* " * 16)

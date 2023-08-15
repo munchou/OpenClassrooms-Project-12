@@ -11,33 +11,11 @@ import sentry_sdk
 
 
 class CrudUser:
-    # def back_to_menu(self, session, username):
-    #     from controllers.authentication_users import UserAuthentication
-
-    #     try:
-    #         user_status = UserAuthentication().check_user_status(session, username)
-    #         if user_status == 1:
-    #             from controllers.menu_management import MenuManagement
-
-    #             MenuManagement().menu_management(username)
-    #         if user_status == 2:
-    #             from controllers.menu_sales import MenuSales
-
-    #             MenuSales().menu_sales(username)
-    #         if user_status == 3:
-    #             from controllers.menu_support import MenuSupport
-
-    #             MenuSupport().menu_support(username)
-    #     except AttributeError:
-    #         pass
-    #     from controllers.menu_admin import MenuAdmin
-
-    #     MenuAdmin().menu_admin(username)
-
     def user_create(self, session, username):
-        """Create a user after filling the necessary fields.
-        If needed, each input will check that the entered
-        information is valid and can be processed."""
+        """Create a user after filling the required fields.
+        If needed, each input will be checked to ensure that
+        the entered information is valid and can be processed.
+        Sentry will send a log message upon creation."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         CrudUserMessagesView().creation_title()
@@ -80,6 +58,8 @@ class CrudUser:
         Utils().back_to_menu(session, username)
 
     def user_update(self, session, username):
+        """Update a user's selected field.
+        Sentry will send a log message upon update."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         current_user = DALUser().get_user_by_username(session, username)
@@ -144,6 +124,10 @@ class CrudUser:
         return field_to_update, value_to_update, None
 
     def user_delete(self, session, username):
+        """Deactivate a user by entering their ID.
+        This process is reversible with a manager
+        update that user or the admin directly
+        accessing the database."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         while True:
@@ -159,5 +143,7 @@ class CrudUser:
         if confirm_deletion == "y":
             DALSession().session_delete_and_commit(session, user)
             CrudUserMessagesView().remove_user_sucess(user)
-        # self.back_to_menu(username)
+            sentry_sdk.capture_message(
+                f"A user has been deactivated ({user.username}, ID: {user.id})"
+            )
         Utils().back_to_menu(session, username)

@@ -2,6 +2,7 @@ from configparser import ConfigParser
 
 
 def config(filename="database.ini", section="postgresql"):
+    """Config file parser, check if the file matches expectations."""
     # create parser
     parser = ConfigParser()
 
@@ -27,6 +28,9 @@ def create_ini(
     config_password_input,
     filename="database.ini",
 ):
+    """Create the config INI file after having filled in
+    the fields."""
+
     parser = ConfigParser()
     parser.add_section("postgresql")
     parser.set("postgresql", "host", config_host_input)
@@ -40,6 +44,7 @@ def create_ini(
 
 
 def ini_update_database(new_database, filename="database.ini"):
+    """Write/Update the database in the INI file."""
     parser = ConfigParser()
     parser.read(filename)
     parser.set("postgresql", "database", new_database)

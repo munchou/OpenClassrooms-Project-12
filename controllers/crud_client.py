@@ -10,6 +10,9 @@ from models import models
 
 class CrudClient:
     def client_create(self, session, connected_user):
+        """Create a client after filling the required fields.
+        If needed, each input will be checked to ensure that
+        the entered information is valid and can be processed."""
         Utils().user_status_request_pwd(session, connected_user)
         Utils().clear_screen()
         CrudClientMessagesView().creation_title()
@@ -51,6 +54,7 @@ class CrudClient:
         Utils().back_to_menu(session, connected_user)
 
     def client_update(self, session, username):
+        """Update a client's selected field."""
         Utils().user_status_request_pwd(session, username)
         Utils().clear_screen()
         is_salesman = False
@@ -116,6 +120,7 @@ class CrudClient:
         return field_to_update, value_to_update
 
     def client_display_all(self, session, username):
+        """Display all the clients in the database."""
         Utils().clear_screen()
         clients = DALClient().get_all_clients(session)
         CrudClientMessagesView().client_display_all(session, clients)

@@ -44,9 +44,6 @@ class AuthenticationView:
     @staticmethod
     def authentication_error():
         print("\nError while trying to connect, please try again.\n")
-        # print("Press any key to exit the program.")
-        # _ = getch()
-        # exit()
 
     def input_user(self, current_database):
         full_title = f"* AUTHENTICATION to database '{current_database}' *"
@@ -67,6 +64,7 @@ class AuthenticationView:
         return username_input, password_input
 
     def admin_menu(self):
+        """Admin Menu: display and inputs."""
         from controllers.utils import Utils
 
         Utils().clear_screen()
@@ -127,15 +125,6 @@ class AuthenticationView:
         print(
             "\n\tERROR: Either the user does not exist or the password is wrong. Please try again.\n"
         )
-
-    # def user_team_management(self, username):
-    #     print(f"{username} is in the Management Team")
-
-    # def user_team_sales(self, username):
-    #     print(f"{username} is in the Sales Team")
-
-    # def user_team_support(self, username):
-    #     print(f"{username} is in the Support Team")
 
     def crud_password_check_wrong(self):
         print("Wrong password, you are going to be disconnected.")

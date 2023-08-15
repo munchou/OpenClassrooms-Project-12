@@ -5,9 +5,11 @@ from sqlalchemy import exc
 
 class DALSession:
     def session_commit(self, session):
+        """Session commit."""
         session.commit()
 
     def session_add_and_commit(self, session, object):
+        """Session. Add the object and commit it."""
         session.add(object)
         self.session_commit(session)
 
@@ -18,45 +20,43 @@ class DALSession:
         then be reactivated if needed."""
         object.status = "deactivated"
         self.session_commit(session)
-        # try:
-        #     session.delete(object)
-        #     try:
-        #         self.session_commit(session)
-        #     except Exception:
-        #         pass
-        # except Exception:
-        #     pass
-        #     print(
-        #         "That user is linked to other entities (clients/contracts/events) and cannot be removed."
-        #     )
 
     def session_close(self, session):
+        """Close the session."""
         session.close()
 
 
 class DALUser:
     def get_current_user(self, session, connected_user):
+        """Get the current logged in user using the username."""
         return session.query(models.Users).filter_by(username=connected_user).first()
 
     def get_user_by_id(self, session, user_id):
+        """Get the user using the ID."""
         return session.query(models.Users).filter_by(id=user_id).first()
 
     def get_user_by_username(self, session, user):
+        """Get the user using the username."""
         return session.query(models.Users).filter_by(username=user).first()
 
     def get_all_users(self, session):
+        """Get all the users."""
         return session.query(models.Users)
 
     def get_all_users_usernames(self, session):
+        """Get all the users' usernames."""
         return session.query(models.Users.username).all()
 
     def get_user_email(self, session, email_input):
+        """Get a user's email object using the email address."""
         return session.query(models.Users.email).filter_by(email=email_input).first()
 
     def get_all_users_emails(self, session):
+        """Get all the emails."""
         return session.query(models.Users.email).all()
 
     def get_user_saltychain(self, session, username):
+        """Get a user's saltychain's chunks using the username."""
         return (
             session.query(models.Users.saltychain)
             .filter(models.Users.username == username)
@@ -64,6 +64,7 @@ class DALUser:
         )
 
     def get_user_hashkey(self, session, username):
+        """Get a user's hashkey using the username."""
         user_hashkey = (
             session.query(models.Users.password)
             .filter(models.Users.username == username)
