@@ -53,7 +53,7 @@ class CrudInputsView:
             username_input = input("\tusername: ")
             if len(username_input) > 50:
                 print(
-                    "\n\tERROR: The username cannot contain than 50 characters. Please try again.\n"
+                    "\n\tERROR: The username cannot contain more than 50 characters. Please try again.\n"
                 )
                 continue
             if self.check_if_input_empty(username_input):
