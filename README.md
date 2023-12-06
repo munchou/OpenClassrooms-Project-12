@@ -6,6 +6,9 @@ _Tested with Windows 10 and Python 3.10.2_
 
 _IMPORTANT NOTE: the project's requirements have evolved after I started it. Although it is asked to build a back-end architecture based on command lines, I developed a whole terminal interface that allows the users to do whatever they want without having to have to type any annoying commands. In a nutshell, I did more than what was asked, which took way too much time._
 
+# Preview
+![url](P12_PostgreSQL_Archi_720p.gif)
+
 # Hao2do (Windows)
 
 The following steps are only to setup your machine and start the program.
